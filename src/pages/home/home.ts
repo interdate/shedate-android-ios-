@@ -4,6 +4,9 @@ import {Http} from '@angular/http';
 import {Storage} from '@ionic/storage';
 import {ApiQuery} from '../../library/api-query';
 import {ProfilePage} from "../profile/profile";
+import {ActivationPage} from "../activation/activation";
+import {DialogPage} from "../dialog/dialog";
+// import {ActivationPage} from "../activation/activation";
 declare var $: any;
 
 @Component({
@@ -13,7 +16,7 @@ declare var $: any;
 export class HomePage {
     @ViewChild(InfiniteScroll) scroll: InfiniteScroll;
 
-    public options: {filter: any} = {filter: 1};
+    public options: { filter: any } = {filter: 1};
     list: any;
     action: any;
     offset: any;
@@ -49,6 +52,15 @@ export class HomePage {
                 public events: Events,
                 public storage: Storage) {
 
+        this.api.audioCall = new Audio();
+        this.api.audioCall.src = 'https://m.richdate.co.il/phone_ringing.mp3';
+        this.api.audioCall.loop = true;
+        this.api.audioCall.load();
+        this.api.audioWait = new Audio();
+        this.api.audioWait.src = 'https://m.richdate.co.il/landline_phone_ring.mp3';
+        this.api.audioWait.loop = true;
+        this.api.audioWait.load();
+
 
         if (navParams.get('params') && navParams.get('params') != 'login') {
 
@@ -60,11 +72,14 @@ export class HomePage {
                 }
             }
 
+            console.log(navParams.get('params').list);
+
+
             this.params_str = navParams.get('params');
             this.params = JSON.parse(this.params_str);
         }
 
-        if(!navParams.get('params') || navParams.get('params') == 'login'){
+        if (!navParams.get('params') || navParams.get('params') == 'login') {
             this.api.setLocation();
         }
 
@@ -76,8 +91,6 @@ export class HomePage {
         }
 
         this.page_counter = 1;
-
-
 
         this.storage.get('username').then((username) => {
             this.storage.get('password').then((password) => {
@@ -106,7 +119,7 @@ export class HomePage {
     }
 
     toDialog(user) {
-        this.navCtrl.push('DialogPage', {
+        this.navCtrl.push(DialogPage, {
             user: user
         });
     }
@@ -196,45 +209,62 @@ export class HomePage {
 
     unFavorites(user) {
 
-            let params = JSON.stringify({
-                list: 'Unfavorite'
+        let params = JSON.stringify({
+            list: 'Unfavorite'
+        });
+
+        this.http.post(this.api.url + '/user/managelists/favi/0/' + user.id, params, this.api.setHeaders(true, this.username, this.password)).subscribe(data => {
+            let toast = this.toastCtrl.create({
+                message: data.json().success,
+                duration: 3000
             });
 
-            this.http.post(this.api.url + '/user/managelists/favi/0/' + user.id, params, this.api.setHeaders(true, this.username, this.password)).subscribe(data => {
-                let toast = this.toastCtrl.create({
-                    message: data.json().success,
-                    duration: 3000
-                });
+            console.log(this.users);
 
-                console.log(this.users);
-
-                toast.present();
-                this.users.splice(this.users.indexOf(user), 1);
-                this.events.publish('statistics:updated');
-            });
+            toast.present();
+            this.users.splice(this.users.indexOf(user), 1);
+            this.events.publish('statistics:updated');
+        });
 
     }
 
     addFavorites(user) {
+        let params, url;
+        let index = this.users.indexOf(user);
+        if (this.params.list == 'fav') {
+            this.users.splice(index, 1);
+        }
 
-        if (user.isFav == false) {
-            user.isFav = true;
 
-
-            let params = JSON.stringify({
+        if (user.isFav == '0') {
+            this.users[index].isFav = '1';
+            user.isFav = '1';
+            params = JSON.stringify({
                 list: 'Favorite'
             });
 
-            this.http.post(this.api.url + '/user/managelists/favi/1/'+ user.id, params, this.api.setHeaders(true, this.username, this.password)).subscribe(data => {
-                let toast = this.toastCtrl.create({
-                    message: data.json().success,
-                    duration: 3000
-                });
+            url = this.api.url + '/user/managelists/favi/1/' + user.id;
 
-                toast.present();
-                this.events.publish('statistics:updated');
+        } else {
+
+            this.users[index].isFav = '0';
+            user.isFav = '0';
+            params = JSON.stringify({
+                list: 'Unfavorite'
             });
+
+            url = this.api.url + '/user/managelists/favi/0/' + user.id;
         }
+
+        this.api.http.post(url, params, this.api.setHeaders(true, this.username, this.password)).subscribe((data: any) => {
+            let toast = this.toastCtrl.create({
+                message: data.json().success,
+                duration: 3000
+            });
+
+            toast.present();
+            this.events.publish('statistics:updated');
+        });
     }
 
     sortBy() {
@@ -246,7 +276,14 @@ export class HomePage {
             list: '',
             filter: this.filter,
             page: 1,
-            searchparams: {region: this.params.searchparams.region, agefrom: this.params.searchparams.agefrom, ageto: this.params.searchparams.ageto, sexpreef: this.params.searchparams.sexpreef, meritalstat: this.params.searchparams.meritalstat, userNick: this.params.searchparams.userNick}
+            searchparams: {
+                region: this.params.searchparams.region,
+                agefrom: this.params.searchparams.agefrom,
+                ageto: this.params.searchparams.ageto,
+                sexpreef: this.params.searchparams.sexpreef,
+                meritalstat: this.params.searchparams.meritalstat,
+                userNick: this.params.searchparams.userNick
+            }
 
         });
 
@@ -256,7 +293,14 @@ export class HomePage {
                 list: this.params.list,
                 filter: this.filter,
                 page: 1,
-                searchparams: {region: this.params.searchparams.region, agefrom: this.params.searchparams.agefrom, ageto: this.params.searchparams.ageto, sexpreef: this.params.searchparams.sexpreef, meritalstat: this.params.searchparams.meritalstat, userNick: this.params.searchparams.userNick}
+                searchparams: {
+                    region: this.params.searchparams.region,
+                    agefrom: this.params.searchparams.agefrom,
+                    ageto: this.params.searchparams.ageto,
+                    sexpreef: this.params.searchparams.sexpreef,
+                    meritalstat: this.params.searchparams.meritalstat,
+                    userNick: this.params.searchparams.userNick
+                }
             })
         }
 
@@ -276,6 +320,7 @@ export class HomePage {
             //loading.present();
             this.username = this.navParams.get('username');
             this.password = this.navParams.get('password');
+
 
             this.http.post(this.api.url + '/users/search/', this.params_str, this.api.setHeaders(true, this.username, this.password)).subscribe(data => {
                 loading.dismiss();
@@ -304,6 +349,8 @@ export class HomePage {
                     this.loader = false;
                 }
                 //this.setDistanceFormat();
+            }, () => {
+                loading.dismiss();
             });
         }
     }
@@ -329,6 +376,10 @@ export class HomePage {
         }
     }
 
+    toVideoChat(user) {
+        this.api.openVideoChat({id: user.id, chatId: 0, alert: false, username: user.userNick});
+    }
+
     onScroll(event) {
         //this.scrolling = true;
         //this.scrolling = true;
@@ -350,9 +401,6 @@ export class HomePage {
 
     ionViewWillEnter() {
         this.api.pageName = 'HomePage';
-        $('.back-btn').hide();
 
     }
-
-
 }

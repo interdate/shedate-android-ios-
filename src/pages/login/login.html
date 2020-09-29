@@ -18,27 +18,33 @@
 </ion-content>
 <ion-footer>
 <div class="login-form">
+  <div *ngIf="fbId" class="text-login-fb">
+    <h2>{{form?.facebook.login_text_h }}</h2>
+    <p>{{form?.facebook.login_text_p  }}</p>
+  </div>
   <ion-list>
     <ion-item>
-      <ion-input [(ngModel)]="user.name" type="text" placeholder="{{ form.login.username.label }}"></ion-input>
+      <ion-input [(ngModel)]="form?.login.username.value" type="text" placeholder="{{ form?.login.username.label }}"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-input [(ngModel)]="form.login.password.value" type="password" placeholder="{{ form.login.password.label }}"></ion-input>
+      <ion-input [(ngModel)]="form?.login.password.value" type="password" placeholder="{{ form?.login.password.label }}"></ion-input>
     </ion-item>
     <div color="red" class="err">{{ errors }}</div>
 
   </ion-list>
 
   <div class="login-btn">
-    <button margin-bottom color="danger" tappable (click)="formSubmit()" ion-button block>{{ form.login.submit }}</button>
+    <button margin-bottom color="danger" tappable (click)="formSubmit()" ion-button block>{{ form?.login.submit }}</button>
     <div *ngIf="fingerAuth">
-    <button color="danger" (click)="fingerAuthentication(true)" tappable (click)="formSubmit()" ion-button block>כניסה לשידייט באמצעות טביעת אצבע</button>
+      <button color="danger" (click)="fingerAuthentication(true)" tappable (click)="formSubmit()" ion-button block>כניסה לשידייט באמצעות טביעת אצבע</button>
     </div>
+    <button *ngIf="form?.facebook?.enabled" color="danger" size="small" class="fbbtn" ion-button block (click)="loginFB()">  <img height="50" src="https://m.zigzug.co.il/images/facebook1.png" class="facebook-login"> {{form?.facebook?.login_button}}   </button>
+<!--    <button  color="danger" size="small" class="fbbtn" ion-button block (click)="test()">  <img src="https://m.zigzug.co.il/images/facebook1.png" class="facebook-login"> {{form?.login?.facebook?.login_button}}   </button>-->
   </div>
   <div padding-top padding-left padding-right>
-  <button color="danger" class="btn" (click)="onRegistrationPage()" ion-button default>{{ form.login.join_free }}</button>
-  <button color="danger" class="btn grey" (click)="onPasswordRecoveryPage()"  ion-button default>{{ form.login.forgot_password }}</button>
+  <button color="danger" class="btn" (click)="onRegistrationPage()" ion-button default>{{ form?.login.join_free }}</button>
+  <button color="danger" class="btn grey" (click)="onPasswordRecoveryPage()"  ion-button default>{{ form?.login.forgot_password }}</button>
   </div>
   </div>
 </ion-footer>

@@ -31,7 +31,7 @@ export class AdvancedSearchResultPage {
     get_params: { page: any, count: any, advanced_search: any} = {page: 1, count: 10, advanced_search: {}};
     url: any = false;
     form_filter: any;
-    users: Array<{ id: string, distance: string, city: string, isPaying: string, isOnline: string, isAddBlackListed: string, nickName: string,
+    users: Array<{ id: string, distance: string, isFav: string, city: string, isPaying: string, isOnline: string, isAddBlackListed: string, nickName: string,
         mainImage: { url: any }, age: string, region_name: string, image: string, about: {}, component: any}>;
     params: { action: any, page: any, list: any } = {action: 'online', page: 1, list: ''};
     selectOptions = {title: 'popover select'};
@@ -81,6 +81,10 @@ export class AdvancedSearchResultPage {
         this.navCtrl.pop();
     }
 
+    toVideoChat(user) {
+        this.api.openVideoChat({id: user.id, chatId: 0, alert: false, username: user.userNick});
+    }
+
     addLike(user) {
 
         let alert = this.alertCtrl.create({
@@ -120,18 +124,18 @@ export class AdvancedSearchResultPage {
     block(user, bool) {
 
         let toast;
-
+        let url;
         if (bool == true) {
             user.isBlackListed = true;
 
-            var url = this.api.url + '/user/favorites/' + user.id + '/delete';
+             url = this.api.url + '/user/favorites/' + user.id + '/delete';
         }
 
         if (bool == false) {
 
             user.isBlackListed = false;
 
-            var url = this.api.url + '/user/blacklist/' + user.id + '/delete';
+             url = this.api.url + '/user/blacklist/' + user.id + '/delete';
 
             var message = 'The user has been removed from your black list';
 
@@ -151,32 +155,44 @@ export class AdvancedSearchResultPage {
     }
 
     addFavorites(user) {
+        let params, url;
+        let index = this.users.indexOf(user);
+        if (this.params.list == 'fav') {
+            this.users.splice(index, 1);
+        }
 
-        if (user.isAddFavorite == false) {
-
-            user.isAddFavorite = true;
-
-            let toast = this.toastCtrl.create({
-                message: 'The user has been added to Favorites',
-                duration: 2000
-            });
-
-            toast.present();
-
-            let params = JSON.stringify({
+        if (user.isFav == '0') {
+            this.users[index].isFav = '1';
+            user.isFav = '1';
+            params = JSON.stringify({
                 list: 'Favorite'
             });
 
-            this.http.post(this.api.url + '/user/favorites/' + user.id, params, this.api.setHeaders(true, this.username, this.password)).subscribe(data => {
-                this.events.publish('statistics:updated');
+            url = this.api.url + '/user/managelists/favi/1/' + user.id;
+
+        } else {
+            this.users[index].isFav = '0';
+            user.isFav = '0';
+            params = JSON.stringify({
+                list: 'Unfavorite'
             });
+
+            url = this.api.url + '/user/managelists/favi/0/' + user.id;
         }
+
+        this.api.http.post(url, params, this.api.setHeaders(true, this.username, this.password)).subscribe((data: any) => {
+            let toast = this.toastCtrl.create({
+                message: data.json().success,
+                duration: 3000
+            });
+
+            toast.present();
+            this.events.publish('statistics:updated');
+        });
     }
 
+
     sortBy() {
-
-        console.log(this.get_params.advanced_search);
-
 
         let params = JSON.stringify({
             action: 'search',

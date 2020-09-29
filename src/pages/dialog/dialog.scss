@@ -1,4 +1,8 @@
 page-dialog {
+  pre {
+    font-family: inherit;
+    font-size: 1em;
+  }
 
   ion-card {
     position: relative;
@@ -65,8 +69,16 @@ page-dialog {
     height: 12px;
   }
 
+  .v-ios-icon {
+    font-size: 1.4rem;
+    position: absolute;
+    color: grey;
+    top: 3px;
+    left: 8px;
+  }
+
   .icon-md-danger {
-    color: #ffffff;
+    color: blue !important;
   }
 
 
@@ -74,11 +86,19 @@ page-dialog {
     color: #2e6374;
   }
 
+  //.delete {
+  //  position: absolute;
+  //  font-size: 1.5em;
+  //  left: 24px;
+  //  bottom: -10px;
+  //}
+
   .delete {
     position: absolute;
-    font-size: 1.5em;
-    left: 24px;
-    bottom: -10px;
+    /* font-size: 19px; */
+    left: -7px;
+    bottom: -15px;
+    font-size: 2.6em;
   }
 
   .text-input-md {
@@ -92,7 +112,8 @@ page-dialog {
   .date {
     text-align: center;
     font-size: 10px;
-    color: #666;
+    //color: #666;
+    color: #000;
   }
 
   .msg-item {
@@ -114,12 +135,7 @@ page-dialog {
     height: auto;
   }
 
-  .v-ios-icon {
-    font-size: 1.4rem;
-    position: absolute;
-    top: 3px;
-    left: 8px;
-  }
+
 
   .record-b {
     float: left;

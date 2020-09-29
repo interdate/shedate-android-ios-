@@ -11,20 +11,22 @@ import {
 } from "ionic-angular";
 import {Market} from "@ionic-native/market";
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
-import {Http} from "@angular/http";
-import {StatusBar} from "@ionic-native/status-bar";
-import {SplashScreen} from "@ionic-native/splash-screen";
-import {ApiQuery} from "../library/api-query";
-import {Storage} from "@ionic/storage";
-import {HomePage} from "../pages/home/home";
-import {LoginPage} from "../pages/login/login";
+import { Http } from "@angular/http";
+import { StatusBar } from "@ionic-native/status-bar";
+import { SplashScreen } from "@ionic-native/splash-screen";
+import { ApiQuery } from "../library/api-query";
+import { Storage } from "@ionic/storage";
+import { HomePage } from "../pages/home/home";
+import { ActivationPage } from "../pages/activation/activation";
+import { LoginPage } from "../pages/login/login";
 import {RegisterPage} from "../pages/register/register";
 import {ChangePhotosPage} from "../pages/change-photos/change-photos";
 import {SettingsPage} from "../pages/settings/settings";
-import {InboxPage} from "../pages/inbox/inbox";
+// import {InboxPage} from "../pages/inbox/inbox";
 import {SubscriptionPage} from "../pages/subscription/subscription";
 import {ProfilePage} from "../pages/profile/profile";
 import { AppVersion } from '@ionic-native/app-version';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 
 declare var $: any;
@@ -45,7 +47,7 @@ export class MyApp {
     rootPage: any;
     //rootPage = LoginPage;
     menu_items_logout: Array<{_id: string, icon: string, title: string, count: any, component: any}>;
-    menu_items_login: Array<{_id: string, icon: string, title: string, count: any, component: any}>;
+    menu_items_login: Array<{_id: string, icon: string, title: string, count: any, component: any}> = [];
     menu_items: Array<{_id: string, icon: string, title: string, count: any, component: any}>;
     menu_items_settings: Array<{_id: string, icon: string, title: string, count: any, component: any}>;
     menu_items_contacts: Array<{_id: string, list: string, icon: string, title: string, count: any, component: any}>;
@@ -65,6 +67,8 @@ export class MyApp {
     avatar: string = '';
     stats: string = '';
     interval: any = true;
+    social: any;
+    pageCanEnterNotActivated: any = ['ActivationPage', 'LoginPage', 'ContactUsPage', 'PagePage'];
 
     constructor(public platform: Platform,
                 public menu: MenuController,
@@ -79,6 +83,7 @@ export class MyApp {
                 public events: Events,
                 public market: Market,
                 public loadingCtrl: LoadingController,
+                public ap: AndroidPermissions,
                 public push: Push) {
 
         // let status bar overlay webview
@@ -86,14 +91,13 @@ export class MyApp {
 // set status bar to white
         //this.statusBar.styleBlackTranslucent();
 
-        this.http.get(api.url + '/user/menu/', api.header).subscribe(data => {
-
+        this.http.get(api.url + '/user/menu/', api.header).subscribe((data:any) => {
+            this.social = data.json().social;
             let menu = data.json().menu;
             this.initMenuItems(menu);
 
             this.storage.get('user_id').then((val) => {
 
-                this.initPushNotification();
                 if (!val) {
                     this.rootPage = LoginPage;
                     this.menu_items = this.menu_items_logout;
@@ -103,24 +107,33 @@ export class MyApp {
                     this.rootPage = HomePage;
                 }
             });
-        });
+        }, error => console.log('error ', error));
 
         this.closeMsg();
-        var that = this;
+        const that = this;
         setInterval(function () {
-            let page = that.nav.getActive();
+            // let page = that.nav.getActive();
 
-            if (!(page.instance instanceof LoginPage) && that.api.username != false && that.api.username != null) {
+            if (!(that.api.pageName == 'LoginPage') && that.api.username != false && that.api.username != null) {
                 that.getBingo();
                 // New Message Notification
                 that.getMessage();
                 that.getStatistics();
             }
         }, 10000);
-
+        this.initPushNotification();
         this.initializeApp();
         this.menu1Active();
         this.getAppVersion();
+
+    }
+
+    requestPermit() {
+        this.ap.requestPermissions([this.ap.PERMISSION.CAMERA, this.ap.PERMISSION.RECORD_AUDIO]).then(
+            result => {this.api.videoShow = false;},
+            //result => {this.api.videoShow = true;},
+            err => {this.api.videoShow = false;}
+        );
     }
 
     getAppVersion() {
@@ -172,10 +185,12 @@ export class MyApp {
         this.storage.get('user_id').then((id) => {
             if (id) {
 
-                let page = this.nav.getActive();
-                let headers = this.api.setHeaders(true);
-                if (page.instance instanceof ChangePhotosPage) {
-                    headers = this.api.setHeaders(true, false, false, '1');
+                // let page = this.nav.getActive();
+
+                if (this.api.pageName == 'ChangePhotosPage') {
+                    this.api.setHeaders(true, false, false, '1');
+                } else {
+                    this.api.setHeaders(true);
                 }
 
                 this.http.get(this.api.url + '/user/statistics/', this.api.setHeaders(true)).subscribe(data => {
@@ -183,6 +198,9 @@ export class MyApp {
                     let statistics = data.json().statistics;
 
                     this.isPaying = data.json().userIsPaying;
+
+                    this.api.isActivated = data.json().isActivated;
+
 
                     this.menu_items_login.push();
 
@@ -226,6 +244,8 @@ export class MyApp {
                     //this.nav.push(this.rootPage);
                     //this.clearLocalStorage(); //*********************************** put a message *************************
                 });
+                    this.checkActivate()
+
             }
         });
 
@@ -451,6 +471,7 @@ export class MyApp {
     }
 
     initializeApp() {
+        // alert('in initializeApp');
         this.platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need
@@ -461,12 +482,38 @@ export class MyApp {
             /*setTimeout(function () {
                 this.splashScreen.hide();
             },1000);*/
+
+            this.ap.checkPermission(this.ap.PERMISSION.CAMERA).then(
+                result => {
+                    console.log(result);
+                    if(result.hasPermission) {
+                        this.ap.checkPermission(this.ap.PERMISSION.RECORD_AUDIO).then(
+                            result => {
+                                if(result.hasPermission) {
+                                    //enable videocall
+                                    //this.api.videoShow = true;
+                                    this.api.videoShow = false;
+                                }else{
+                                    this.requestPermit();
+                                }
+                            },
+                            err => {
+                                this.requestPermit();
+                            }
+                        );
+                    }else{
+                        this.requestPermit();
+                    }
+                },
+                err => {this.requestPermit();}
+            );
         });
+
     }
 
     initPushNotification() {
         if (!this.platform.is('cordova')) {
-            //alert("Push notifications not initialized. Cordova is not available - Run in physical device");
+            // alert("Push notifications not initialized. Cordova is not available - Run in physical device");
             return;
         }
 
@@ -488,7 +535,6 @@ export class MyApp {
         const push2: PushObject = this.push.init(options);
 
         push2.on('registration').subscribe((data) => {
-            //this.deviceToken = data.registrationId;
             this.storage.set('deviceToken', data.registrationId);
             this.api.sendPhoneId(data.registrationId);
             //TODO - send device token to server
@@ -499,11 +545,17 @@ export class MyApp {
             //if user using app and push notification comes
             if (data.additionalData.foreground == false) {
                 this.storage.get('user_id').then((val) => {
-                    if (val) {
-                        this.nav.push('InboxPage');
-                    } else {
-                        this.nav.push('LoginPage');
-                    }
+
+                    let that = this;
+
+                    setTimeout(function () {
+                        if (val) {
+                           // alert('test0' + JSON.stringify(val));
+
+                            that.nav.push('InboxPage');
+                        }
+                    }, 300);
+
                 });
             }
         });
@@ -605,6 +657,7 @@ export class MyApp {
 
     homePage() {
         this.storage.get('user_id').then((val) => {
+            console.log(val);
             if (val) {
                 this.nav.setRoot(HomePage);
                 //this.api.setLocation();
@@ -619,16 +672,9 @@ export class MyApp {
         this.storage.get('user_id').then((val) => {
             if (val) {
                 this.http.get(this.api.url + '/user/bingo', this.api.setHeaders(true)).subscribe(data => {
-                    //this.storage.set('status', this.status);
                     this.avatar = data.json().texts.avatar;
                     this.texts = data.json().texts;
                     // DO NOT DELETE
-                    /*if (this.status != data.json().status) {
-                     this.status = data.json().status;
-                     this.checkStatus();
-                     } else {
-                     this.status = data.json().status;
-                     }*/
                     if (data.json().user) {
                         let params = JSON.stringify({
                             bingo: data.json().user
@@ -638,8 +684,91 @@ export class MyApp {
                         });
                     }
                 });
+
+                //call
+                if(this.api.pageName != 'SubscriptionPage') {
+                    this.api.http.get(this.api.url + '/user/call/get', this.api.setHeaders(true)).subscribe((res: any) => {
+                        let data: any = res.json();
+                        if (this.api.videoChat == null && data.calls) {
+                            this.callAlert(data);
+                        }
+                    });
+                }
             }
         });
+    }
+
+    async callAlert(data){
+        console.log(data);
+        if(this.api.callAlertShow == false && this.api.videoChat == null) {
+            this.api.playAudio('wait');
+            this.api.callAlertShow = true;
+            const param = {
+                id: data.calls.msgFromId,
+                chatId: data.calls.msgId,
+                alert: true,
+                username: data.calls.nickName,
+            };
+            this.api.checkVideoStatus(param);
+            this.api.callAlert = await this.api.alertCtrl.create({
+                title: '<img class="alert-call" src="' + data.calls.img.url + '"> ' + data.calls.title,
+                // header: 'שיחה נכנסת',
+                message: data.calls.title.message,
+                buttons: [
+                    {
+                        text: data.calls.buttons[1],
+                        cssClass: 'redCall',
+                        role: 'cancel',
+                        handler: () => {
+                            this.api.stopAudio();
+                            this.api.callAlertShow = false;
+                            this.api.http.post(this.api.url + '/user/call/' + param.id, {
+                                message: 'close',
+                                id: param.chatId
+                            }, this.api.setHeaders(true)).subscribe((data: any) => {
+                                // let res = data;
+
+                                console.log('close');
+                                if(this.api.callAlert !== null) {
+                                    this.api.callAlert.dismiss();
+                                    this.api.callAlert = null;
+                                }
+
+                                // console.log(res);
+                                // this.status == 'close';
+                                // location.reload();
+                            });
+                        }
+                    },
+                    {
+                        text: data.calls.buttons[0],
+                        cssClass: 'greenCall',
+                        handler: () => {
+                            if(this.api.callAlert !== null) {
+                                this.api.callAlert.dismiss();
+                                this.api.callAlert = null;
+                            }
+                            // this.webRTC.partnerId = param.id;
+                            // this.webRTC.chatId = param.chatId;
+                            // this.nav.push(VideoChatPage, param);
+                            console.log('open');
+                            this.api.callAlertShow = false;
+
+                            this.api.openVideoChat(param);
+                        }
+                    }
+                ]
+            });
+
+
+            await this.api.callAlert.present();
+            this.api.callAlert.onWillDismiss(() => {
+                this.api.callAlertShow = false;
+                this.api.callAlert = null;
+                this.api.stopAudio();
+                console.log('dismiss');
+            });
+        }
     }
 
     dialogPage() {
@@ -690,12 +819,12 @@ export class MyApp {
                 this.nav.push('RegisterPage');
                 this.nav.push(ChangePhotosPage);
             } else if (this.status == 'not_activated') {
-                this.nav.push('ActivationPage');
+                // this.nav.push('ActivationPage');
             }
         }
-        if (((this.api.pageName == 'ActivationPage') && this.status == 'login')) {
-            this.nav.push(HomePage);
-        }
+        // if (((this.api.pageName == 'ActivationPage') && this.status == 'login')) {
+        //     this.nav.push(HomePage);
+        // }
     }
 
     ngAfterViewInit() {
@@ -708,8 +837,6 @@ export class MyApp {
                 // user and time are the same arguments passed in `events.publish(user, time)`
                 this.getStatistics();
             });
-
-            //let page = this.nav.getActive();
 
             if (this.api.pageName == 'HomePage') {
                 if (this.api.status != '') {
@@ -746,45 +873,26 @@ export class MyApp {
                 }
             });
             window.addEventListener('native.keyboardhide', function () {
-                //let page = el.nav.getActive();
-                //$('.footerMenu, .back-btn').show();
-                //$('.back-btn').show();
-                //el.bannerStatus();
-                /*if ((el.api.pageName != 'LoginPage') && (el.api.pageName != 'DialogPage')) {
-                 $('.footer').show();
-                 }*/
 
                 if (el.api.pageName == 'DialogPage') {
                     $('.back-btn').show();
                     $('.footerMenu').hide();
-                    //setTimeout(function () {
-                    //$('.scroll-content, .fixed-content').css({'margin-bottom': '115px'});
                     $('.scroll-content, .fixed-content').css({'margin-bottom': '65px'});
                     el.content.scrollTo(0, 999999, 300);
-                    //}, 600);
                 } else {
                     if (el.is_login) {
                         $('.footerMenu').show();
-
-                        //$('.back-btn').show();
-                        //setTimeout(function () {
-                        //$('.scroll-content, .fixed-content').css({'margin-bottom': '57px'});
                         $('.scroll-content, .fixed-content').css({'margin-bottom': '57px'});
-                        //}, 500);
                     } else {
                         $('.scroll-content, .fixed-content').css({'margin-bottom': '0px'});
                     }
                 }
-
             });
 
             if (el.api.pageName == 'LoginPage') {
-                //clearInterval(this.interval);
                 this.interval = false;
-                //this.avatar = '';
             }
             if (el.api.pageName == 'HomePage' && this.interval == false) {
-                //$('.link-banner').show();
                 this.interval = true;
                 this.getBingo();
             }
@@ -804,19 +912,27 @@ export class MyApp {
                     this.is_login = true;
                     this.menu_items = this.menu_items_login;
                 }
-
-                /*if (el.api.pageName == 'HelloIonicPage') {
-                 $('.link-banner').show();
-                 }
-
-                 if (el.api.pageName == 'LoginPage') {
-                 $('.link-banner').hide();
-                 }*/
-                //this.bannerStatus();
-
             });
             this.username = this.api.username;
+
+            const that = this;
+            setTimeout(() => {
+             that.checkActivate()
+            }, 1000)
         });
     }
+
+    checkActivate() {
+        if (!this.api.isActivated && this.api.password) {
+            this.api.storage.get('new_user').then((username) => {
+
+                if (!this.pageCanEnterNotActivated.includes(this.api.pageName) && username != 1) {
+                    this.nav.push(ActivationPage);
+                }
+            });
+
+        }
+    }
+
 }
 

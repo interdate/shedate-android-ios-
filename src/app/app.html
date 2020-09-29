@@ -10,6 +10,7 @@
             <ion-icon name="ios-arrow-back-outline"></ion-icon>
         </div>
     </div>
+
 </ion-header>
 <ion-menu side="right" [content]="content" class="side-menu" id="menu1">
     <ion-content>
@@ -37,10 +38,17 @@
                     </ion-badge>
                 </button>
             </div>
+            <div style="padding-bottom: 90px" class="social">
+                <div class="instagram">
+                    <a target="_blank" href="{{social?.instagram}}"> <img src="http://shedate.co.il/images/instagram.png?a=3"> </a>
+                </div>
+                <div class="facebook {{social?.facebook}}">
+                    <a target="_blank" href="{{social?.facebook}}"><img src="assets/img/icons/facebook-icon.png"></a>
+                </div>
+            </div>
         </ion-list>
     </ion-content>
 </ion-menu>
-
 <ion-menu side="right" (ionOpen)="removeBackground()" (ionClose)="menu1Active(false)" (click)="menuCloseAll()"
           [content]="content"
           class="side-menu" id="menu2">
@@ -66,7 +74,6 @@
           class="side-menu" id="menu3">
     <ion-content>
         <ion-list>
-            <!--<div class="statistics">{{ stats }}</div>-->
             <button color="light" small class="left" ion-button icon-right outline menuClose="menu3"
                     (click)="menu1Active()">
                 <ion-icon name="arrow-back"></ion-icon>
@@ -82,23 +89,11 @@
         </ion-list>
     </ion-content>
 </ion-menu>
-<!--<img style="display: none;" class="banner" src="/images/spedate1.gif">-->
 
 <a class="link-banner"  *ngIf="api.banner?.src && api.banner?.link && is_login" href="{{api.banner?.link}}" (click)="goTo();">
-        <img class="banner" src="{{'https://www.shedate.co.il/images/banners/' + api.banner?.src}}">"#"
+        <img class="banner" src="{{'https://www.shedate.co.il/images/banners/' + api.banner?.src}}">
 </a>
 <ion-footer *ngIf="is_login" (swipe)="swipeFooterMenu()">
-    <!--<div *ngIf="new_message && new_message.is_not_sent_today == true" class="messageNotify">
-        <ion-icon (click)="closeMsg()" name="close"></ion-icon>
-        <div *ngIf="new_message?.mainPhoto" class="avatar" (click)="dialogPage()"
-             [ngStyle]="{ 'background-image': 'url(' + new_message?.mainPhoto + ')'}"></div>
-        <div *ngIf="!new_message?.mainPhoto" class="avatar" (click)="dialogPage()"
-             [ngStyle]="{ 'background-image': 'url(' + api.url + '/' + new_message?.noPhoto + ')'}"></div>
-        <div class="content" (click)="dialogPage()">
-            <div class="name">{{ new_message.username }}</div>
-            <div class="text">{{ message.newMessagesText }}</div>
-        </div>
-    </div>-->
     <div class="footerMenu" position="bottom">
         <div class="footer-menu">
             <ul class="menu-one">

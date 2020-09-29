@@ -41,10 +41,10 @@
             <div *ngIf="form?.text?.html" id="html">{{ setHtml('html',form?.text?.html) }}</div>
         </div>
         <form>
-            <div *ngFor="let field of form?.fields">
+            <div *ngFor="let field of form?.fields; let i = index" [attr.data-index]="i">
 
                 <div class="field" *ngIf="field.type == 'submit'" style="text-align: center;">
-                    <button color="danger" ion-button full type="submit" (click)="sendForm();"
+                    <button tappable color="danger" ion-button full type="submit" (click)="sendForm();"
                             [ngClass]="{'small': user?.step > 1 && user?.register}" value="{{ field.label }}"
                             class="submit-big">{{ field.label }}
                     </button>
@@ -62,35 +62,21 @@
                     <div *ngIf="errors[field.name]" class="err">{{errors[field.name] }}</div>
                 </div>
 
-                <div class="field input"
+                <div tappable (click)="openSelect(field,i)" class="field input"
                      *ngIf="field.type == 'select' && field.name != 'userCity' && field.name != 'countryOfOriginId'"
                      [ngClass]="{'error': errors[field.name]}">
                     <div class="placeholder">{{ field.label }}</div>
-                    <!--[ngClass]="{'yellow-bg': err.experienceId0.errors && err.experienceId0.errors?.length != 0 }"-->
                     <ion-item>
-                        <!--interface="popover"-->
-                        <select class="select2 select" name="{{ field.name }}"
-                                [(ngModel)]="user[field.name]" id="{{ field.name }}">
-                            <option value=""></option>
-                            <option *ngFor="let option of field.choices;" value="{{ option.val }}">{{
-                                option.label }}
-                            </option>
-                        </select>
+                        <div class="select-value">{{field.valLabel}}</div>
                     </ion-item>
                     <div *ngIf="errors[field.name]" class="err">{{errors[field.name] }}</div>
                 </div>
 
-                <div class="field" *ngIf="field.name == 'userCity' || field.name == 'countryOfOriginId'"
+                <div tappable (click)="openSelect(field,i)" class="field" *ngIf="(field.name == 'userCity' || field.name == 'countryOfOriginId') && field.type == 'select'"
                      [ngClass]="{'error': errors[field.name]}">
                     <div class="placeholder">{{ field.label }}</div>
                     <ion-item>
-                        <select class="select" data-placeholder="בחר מהרשימה" name="{{ field.name }}"
-                                [(ngModel)]="user[field.name]" id="{{ field.name }}">
-                            <option value=""></option>
-                            <option *ngFor="let option of field.choices;" value="{{ option.val }}">{{
-                                option.label }}
-                            </option>
-                        </select>
+                        <div class="select-value">{{field.valLabel}}</div>
                     </ion-item>
                     <div *ngIf="errors[field.name]" class="err">{{errors[field.name] }}</div>
                 </div>
@@ -100,10 +86,10 @@
                     <div class="placeholder" [innerHTML]="field.label"></div>
                     <!--[ngClass]="{'yellow-bg':  err.userAboutMe.errors && err.userAboutMe.errors?.length != 0 }"-->
                     <ion-item>
-                         <textarea (ionFocus)="inputClick(field.name)" placeholder="{{ field.label }}"
+                         <ion-textarea placeholder="{{ field.label }}"
                                    class="txtbox big" cols="2" rows="2"
                                    name="{{ field.name }}" [(ngModel)]="user[field.name]"
-                                   id="{{ field.name }}"></textarea>
+                                   id="{{ field.name }}"></ion-textarea>
                     </ion-item>
                     <div *ngIf="errors[field.name]" class="err">{{errors[field.name] }}</div>
                 </div>
@@ -123,19 +109,14 @@
 
                 <div *ngIf="field.type == 'selects'" class="input" style="overflow: hidden">
                     <div class="placeholder">{{ field.label }}</div>
-                    <!--[ngClass]="{'yellow-bg': err.experienceId0.errors && err.experienceId0.errors?.length != 0 }"-->
-                    <div class="b  irthday">
-                        <ion-item *ngFor="let select of field.sel">
-                            <select class="sml3" name="{{ select.name }}"
-                                    [(ngModel)]="user[select.name]" id="{{ select.name }}">
-                                <option *ngFor="let option of select.choices;"
-                                        value="{{ option.val }}">{{ option.label }}
-                                </option>
-                            </select>
+                    <div class="birthday">
+                        <ion-item *ngFor="let select of field.sel" (click)="openSelect(select,i)">
+                            <div class="select-value">{{select.valLabel ? select.valLabel : select.placeholder}}</div>
                         </ion-item>
                     </div>
                     <div *ngIf="errors[field.name]" class="err">{{errors[field.name] }}</div>
                 </div>
+
 
                 <div class="field" *ngIf="field.type == 'multiselect'"
                      [ngClass]="{'error': errors[field.name]}">

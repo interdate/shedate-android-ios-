@@ -6,13 +6,101 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>subscription</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>Subscription</ion-title>
+    </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
+    <div class="vip" *ngIf="chooseProduct">
+        <!--        <h2>{{ dataPage?.android.vip.title }}</h2>-->
+        <div class="sub">
+            <div class="title">{{ chooseProduct.titleVip }}</div>
+            <div class="price">
+                <span>הוסף</span>
+                {{ dataPage?.android.vip.price }}
+                <span>לחודש</span>
+                <span class="pr">₪</span>
+            </div>
+            <div class="options">
+                <div *ngFor="let option of dataPage?.android.vip.options">
+                    {{ option }}
+                </div>
+            </div>
+        </div>
+        <div class="button-ok" (click)="goto(chooseProduct, true);" tappable>{{ dataPage?.android.vip.button_ok }}</div>
+        <div class="button-cancel" (click)="goto(chooseProduct, false);"
+             tappable>{{ dataPage?.android.vip.button_cancel }}</div>
+        <div class="button-back" (click)="backChoose()">{{ dataPage?.android.vip.button_back }}</div>
+        <div [innerHtml]="dataPage?.android.vip.textBefore" style="font-size: 13px;color: #000;text-align:center;">
+        </div>
+    </div>
+    <div class="android" *ngIf="platform === 'android'" id="innerPageHolder">
+        <div id="massBoxIn" class="prices">
+            <h2>{{dataPage.title}}</h2>
+            <div [innerHtml]="dataPage?.android.textBefore" style="font-size: 13px;text-align:center;">
+            </div>
 
+            <div *ngIf="dataPage?.android?.form" class="form">{{ dataPage.android.form.text }} <br><input
+                    [(ngModel)]="coupon" type="text"/> <input type="submit" value="{{ dataPage.android.form.button }}"
+                                                              (click)="getPage()"></div>
+            <div class="pay">
+                <div *ngFor="let product of products" class="subs" tappable
+                     (click)="chooseVip(product)">
+                    <div class="left">
+                        <div>
+                            {{product.price}}
+                            <span class="month">לחודש</span>
+                            <span class="pr" [ngClass]="{'sale': call > 1}">₪</span>
+                        </div>
+                    </div>
+                    <div class="ui-link">
+
+                        <span class="subsTitle">{{product.title}}</span>
+                        <p>{{product.text}}</p>
+                    </div>
+                    <div class="clear"></div>
+                </div><!--subs-->
+            </div>
+            <div class="clear"><!--clear--></div>
+            <div [innerHtml]="dataPage?.android.textAfter" style="font-size: 13px;color: #000;">
+            </div>
+            <a target="_blank" href="https://wa.me/9720537006230"><img style="margin: 0 auto; display: block;" src="assets/img/icons/whatsapp-icon.png"></a>
+            <div class="text links">
+                <ul>
+                    <li><span class="link" (click)="page(11)">מדיניות פרטיות</span> | <span class="link" (click)="page(7)">תנאי שימוש</span>
+                </ul>
+            </div>
+        </div><!--result-->
+    </div>
+
+    <div class="ios" *ngIf="platform === 'ios'">
+        <div class="text" [innerHTML]="this.dataPage?.ios.textBefore"></div>
+        <div *ngFor="let product of products, let i = index" class="subscr" tappable>
+            <div (click)="subscribe(product) ">
+                <div class="subscr_center">
+                    <h2>{{product.title}}</h2>
+                    <p>{{product.description}}</p>
+                    <div class="continue">לחץ כאן כדי להמשיך</div>
+                </div>
+                <div class="subscr_right">{{product.price}}</div>
+            </div>
+        </div>
+        <div class="text" [innerHTML]="this.dataPage?.ios.textAfter"></div>
+        <div style="margin-bottom: 24px" class="text">
+            <ul>
+                <li><span class="link" (click)="page(11)">מדיניות פרטיות</span> | <span class="link" (click)="page(7)">תנאי שימוש</span>
+                </li>
+            </ul>
+        </div>
+    </div>
 </ion-content>
+<ion-footer>
+    <div class="register">
+        <ion-navbar class="footerMenu">
+            <ion-title>register-profile</ion-title>
+        </ion-navbar>
+    </div>
+</ion-footer>

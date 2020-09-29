@@ -1,0 +1,34 @@
+page-select {
+  .toolbar-title{
+    text-align: center;
+    color: #fff;
+  }
+  ion-buttons{
+    float: right;
+    button .button-inner{
+      color: #fff;
+    }
+  }
+  ion-header{
+    background-color: #000;
+  }
+  ion-content.content{
+    background-color: #fff;
+  }
+  .bar-buttons-ios {
+    margin-top: 0;
+  }
+  ion-item.item{
+    background-color: #fff;
+    border-top: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+  }
+  .toolbar-background{
+    background-color: transparent;
+  }
+
+  .list.list-md, .list.list-ios{
+    border-top: 2px #cccccc solid;
+    border-bottom: 2px #cccccc solid;
+  }
+}

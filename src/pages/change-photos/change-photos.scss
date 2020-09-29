@@ -9,7 +9,7 @@ page-change-photos {
         border-radius: 2px;
         float: right;
         height: 100px;
-        margin: 5px;
+        margin: 11px 5px;
       }
     
       .photo-img {
@@ -46,7 +46,7 @@ page-change-photos {
     
       .main {
         width: calc(66.666% - 20px);
-        height: 210px;
+        height: 222px;
        }
     
       .remove, .add {
@@ -69,5 +69,28 @@ page-change-photos {
         color: white;
         background: red;
       }
+
+  .small-status-text {
+    font-size: 11px;
+    width: 100px;
+    margin-right: 6px;
+    margin-top: 2px;
+  }
+
+  .small-status-text.valid {
+    color: #23a71b;
+  }
+
+  .small-status-text.waiting {
+    color: #e20020;
+  }
+  
+  .login-btn {
+    margin-top: 21px;
+  }
+  
+  .clear {
+    clear: both;
+  }
 
 }

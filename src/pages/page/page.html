@@ -14,7 +14,7 @@
 <ion-content padding>
 
   <h1>{{ page?.pageTitle }}</h1>
-  <div id="content"></div>
+  <div id="content" [innerHTML]="page?.pageText"></div>
 
 
 </ion-content>

@@ -1,5 +1,17 @@
 page-register {
 
+  ion-item.item-ios {
+    padding: 0;
+  }
+
+  .label-ios .select2 {
+    width: 100% !important;
+  }
+
+  .input-wrapper {
+    border-radius: 6px;
+  }
+
   .stepnum {
     overflow: hidden;
   }
@@ -46,6 +58,8 @@ page-register {
 
   .err {
     clear: both;
+    margin-top: -4px;
+    padding-bottom: 11px;
   }
 
   .steps ul {
@@ -80,7 +94,7 @@ page-register {
   }
 
   ion-input:before, ion-select:before, select:before, ion-datetime:before, ion-searchbar:before {
-    content:"edit";
+    content: "edit";
     background: url("../img/edit.png") no-repeat;
     background-size: 50% auto;
     background-position: center;
@@ -140,8 +154,16 @@ page-register {
     margin: 0;
   }
 
-  .item.item-block.item-md {
+  .label-ios, .label-md {
+    border-radius: 5px;
     margin: 10px 0;
+    background: #fff;
+    padding: 5px 0;
+    min-height: 32px;
+
+    textarea {
+      margin: 0 !important;
+    }
   }
 
   textarea {
@@ -153,7 +175,7 @@ page-register {
   }
 
   .text-input-ios {
-    margin-left:  3%;
+    margin-left: 3%;
   }
 
   .edit-img {
@@ -205,10 +227,15 @@ page-register {
     border-radius: 5px;
   }
 
+  select.select, select {
+    margin: 0 auto
+  }
+
   .stepnum ul {
     overflow: hidden;
     margin-top: 0;
   }
+
   .stepnum li {
     float: left;
     width: 33.3%;
@@ -231,7 +258,13 @@ page-register {
     text-align: center;
   }
 
-    select.sml3 {
+  .birthday .input-wrapper {
+    background: #fff;
+    height: 36px;
+    margin: 5px 0;
+  }
+
+  select.sml3 {
     max-width: 95%;
     width: 95%;
   }
@@ -243,7 +276,8 @@ page-register {
 
   .searchbar-md .searchbar-input {
     box-shadow: none;
-    border-radius: 5px;  }
+    border-radius: 5px;
+  }
 
   ion-list.search {
     margin-bottom: -5px;
@@ -259,6 +293,10 @@ page-register {
     color: #000
   }
 
+  .select-value {
+    padding: 0 8px;
+  }
+
   .placeholder {
     background: #ccc;
     padding: 5px 5px;
@@ -267,6 +305,7 @@ page-register {
   .input {
     position: relative;
   }
+
   .absolute {
     position: absolute;
     right: 0;
@@ -275,28 +314,28 @@ page-register {
   }
 
 
-  .input .item .item-inner .input-wrapper ion-input:before ,
-  .input .item .item-inner .input-wrapper ion-datetime:before ,
-  .input .item .item-inner .input-wrapper ion-searchbar:before ,
+  .input .item .item-inner .input-wrapper ion-input:before,
+  .input .item .item-inner .input-wrapper ion-datetime:before,
+  .input .item .item-inner .input-wrapper ion-searchbar:before,
   .input .item .item-inner .input-wrapper ion-select:before
-  .input .item .item-inner .input-wrapper select:before{
-    right:auto;
-    left:0;
+  .input .item .item-inner .input-wrapper select:before {
+    right: auto;
+    left: 0;
   }
 
   .input .item .item-inner .input-wrapper ion-searchbar:before {
     display: none;
   }
 
-  .input ion-item ion-select, .input ion-item select{
-    text-align:right;
+  .input ion-item ion-select, .input ion-item select {
+    text-align: right;
   }
 
   .input textarea {
     width: 100%;
     margin: 3% 0;
     border: 0;
-    border-radius:5px;
+    border-radius: 5px;
     height: 120px;
   }
 

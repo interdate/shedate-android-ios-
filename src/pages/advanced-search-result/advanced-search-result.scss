@@ -43,6 +43,15 @@ advanced-search-result {
     height: 30px;
   }
 
+  #video-chat{
+    background: url(../assets/img/video/camera.png) center 6px no-repeat;
+    width: 20px;
+    height: 20px;
+    background-size: 14px;
+    background-color: rgba(0,0,0,.6);
+    border-radius: 50%;
+  }
+
   .select .select-icon {
     position: absolute;
     width: 100%;
@@ -158,7 +167,24 @@ advanced-search-result {
     }
   }
 
+  @media (max-width: 360px) {
+    .usr_profile .avatar {
+      height: 150px;
+    }
+
+    .paying {
+      top: 150px !important;
+    }
+  }
+
   @media (max-width: 320px) {
+    .usr_profile .avatar {
+      height: 140px;
+    }
+
+    .paying {
+      top: 140px !important;
+    }
     .card-ios {
       width: calc(58% - 23.6px);
     }
@@ -185,7 +211,7 @@ advanced-search-result {
     position: absolute;
     background-size: cover;
     left: 0;
-    top: 129px;
+    top: 180px;
     z-index: 999999;
   }
 
@@ -269,12 +295,13 @@ ion-card {
   background-size: contain;
 }
 
-#add-green {
+#add-green, #remove-green {
   background: url(../assets/img/icons/fav-red.png) center no-repeat;
   width: 20px;
   height: 20px;
   background-size: contain;
 }
+
 
 #like-red {
   background: url(../assets/img/icons/like-red.png) center no-repeat;
@@ -349,14 +376,6 @@ ul.profile-btn .btn div {
 .user-section > .wrap {
   background: white;
   border-radius: 12px;
-}
-
-.usr_profile .avatar {
-  width: 100%;
-  height: 130px;
-  background-size: cover;
-  background-position: top;
-  border-radius: 11px 11px 0 0;
 }
 
 .content-md, .content-ios {

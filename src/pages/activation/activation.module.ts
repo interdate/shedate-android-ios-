@@ -4,7 +4,7 @@ import { ActivationPage } from './activation';
 
 @NgModule({
   declarations: [
-    ActivationPage,
+    // ActivationPage,
   ],
   imports: [
     IonicPageModule.forChild(ActivationPage),

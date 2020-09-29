@@ -29,7 +29,7 @@ export class DialogPage {
     @ViewChild(Content) content: Content;
     @ViewChild('dialog_msg') messageInput: TextInput;
 
-    user: { id: string, userId: string, isOnline: string, nick_name: string, mainImage: {url: any} ,gender: string, photo};
+    user: any;
     users: Array<{ id: string, isOnline: string, nick_name: string, image: string }>;
     texts: any = {a_conversation_with: '', title: '', photo: ''};
     message: any;
@@ -84,7 +84,7 @@ export class DialogPage {
         });
 
         $("#target").focus(function () {
-            alert("Handler for .focus() called.");
+            // alert("Handler for .focus() called.");
         });
 
         this.api.keyboard.onKeyboardShow().subscribe(data => {
@@ -119,17 +119,16 @@ export class DialogPage {
 
     getPage(scroll) {
 
+        console.log(this.api.pageName);
+
         var userId = typeof this.user.userId != "undefined" ? this.user.userId : this.user.id;
 
         this.reciver_id = userId;
 
-
         this.http.get(this.api.url + '/user/chat/' + userId, this.api.setHeaders(true)).subscribe(data => {
             this.user = data.json().user;
-            /*this.texts = data.json().texts;*/
             this.adminMessagesCount = data.json().adminMessagesCount;
             this.messages = data.json().chat.items;
-            console.log(this.adminMessagesCount);
             this.countNewMess = data.json().chat.newMess;
             this.alert = data.json().blacklist != '' ? data.json().blacklist : '';
             this.contactCurrentReadMessagesNumber = data.json().contactCurrentReadMessagesNumber;
@@ -178,21 +177,6 @@ export class DialogPage {
         });
     }
 
-    /*  back() {
-     this.mediaobject.stop();
-     this.mediaobject.release();
-
-     //this.api.footer = true;
-     $('.footerMenu').show();
-     //$('.scroll-content, .fixed-content').css({'margin-bottom': '57px'});
-     setTimeout(function () {
-     $('.scroll-content, .fixed-content').css({'margin-bottom': '57px'});
-     }, 500);
-
-     this.api.back = true;
-     this.navCtrl.pop();
-     }
-     */
     sendPush() {
         var userId = typeof this.user.userId != "undefined" ? this.user.userId : this.user.id;
         this.http.post(this.api.url + '/user/push/' + userId, {}, this.api.setHeaders(true)).subscribe(data => {
@@ -267,7 +251,7 @@ export class DialogPage {
                 this.filephat = this.file.dataDirectory.replace(/file:\/\//g, '');
                 this.filename = 'recordmg.mp3';//m4a
 
-                let alert = this.alertCtrl.create({
+               /* let alert = */this.alertCtrl.create({
                     title: 'file phat',
                     subTitle: this.file.dataDirectory.replace(/file:\/\//g, '') + '-phat for ios',
                     buttons: ['Dismiss']
@@ -279,7 +263,7 @@ export class DialogPage {
                 /*this.file.externalApplicationStorageDirectory;*/
                 this.filename = 'recordmg' + Math.random() + '.mp3';//3gp
 
-                let alert = this.alertCtrl.create({
+                /*let alert = */this.alertCtrl.create({
                     title: 'file phat',
                     subTitle: /*this.file.externalApplicationStorageDirectory + '-phat for android'*/"file:///storage/emulated/0/",
                     buttons: ['Dismiss']
@@ -452,8 +436,6 @@ export class DialogPage {
                 }
                 this.userHasFreePoints = data.json().chat.userHasFreePoints;
 
-                let that = this;
-
 
                 if (data.json().isNewMess) {
                     this.scrollToBottom();
@@ -528,6 +510,7 @@ export class DialogPage {
     ionViewWillEnter() {
         this.api.footer = false;
         this.api.pageName = 'DialogPage';
+
         $('.back-btn').show();
         $('.footerMenu').hide();
     }
@@ -544,6 +527,11 @@ export class DialogPage {
             $('textarea').val('');
         });
 
+    }
+
+    toVideoChat() {
+        var userId = typeof this.user.userId != "undefined" ? this.user.userId : this.user.id;
+        this.api.openVideoChat({id: userId, chatId: 0, alert: false, username: this.user.userNick});
     }
 
 }

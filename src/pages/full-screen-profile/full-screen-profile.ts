@@ -44,9 +44,10 @@ export class FullScreenProfilePage {
         this.navCtrl.pop();
     }
 
-    ionViewDidLoad() {
-        console.log('ionViewDidLoad FullScreenProfilePage');
+    toVideoChat(user) {
+        this.api.openVideoChat({id: user.id, chatId: 0, alert: false, username: user.userNick});
     }
+
 
     ionViewDidLeave() {
         $('.back-btn').show();
@@ -59,26 +60,35 @@ export class FullScreenProfilePage {
     }
 
     addFavorites(user) {
+        let params, url;
 
-        console.log(JSON.stringify(user));
-
-        if (user.isAddFavorite == false) {
-            user.isAddFavorite = true;
-
-
-            let params = JSON.stringify({
+        if (user.isAddFavorite == '0') {
+            this.user.isAddFavorite = '1';
+            //user.isAddFavorite = '1';
+            params = JSON.stringify({
                 list: 'Favorite'
             });
 
-            this.http.post(this.api.url + '/user/managelists/favi/1/' + user.id, params, this.api.setHeaders(true)).subscribe(data => {
-                let toast = this.toastCtrl.create({
-                    message: data.json().success,
-                    duration: 3000
-                });
+            url = this.api.url + '/user/managelists/favi/1/' + user.id;
 
-                toast.present();
+        } else {
+            this.user.isAddFavorite = '0';
+            //user.isFav = '0';
+            params = JSON.stringify({
+                list: 'Unfavorite'
             });
+
+            url = this.api.url + '/user/managelists/favi/0/' + user.id;
         }
+
+        this.api.http.post(url, params, this.api.setHeaders(true)).subscribe((data: any) => {
+            let toast = this.toastCtrl.create({
+                message: data.json().success,
+                duration: 3000
+            });
+
+            toast.present();
+        });
     }
 
     addLike(user) {

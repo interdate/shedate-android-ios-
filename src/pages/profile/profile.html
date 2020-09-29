@@ -23,8 +23,11 @@
     <div *ngIf="user.isAddFavorite == '0' && user.id " tappable (click)="addFavorites(user)"
          class="favorite-profile-btn">
         <img src="assets/img/icons/padd.png"></div>
-    <div *ngIf="user.isAddFavorite == '1'" class="disabled favorite-profile-btn"><img
-            src="assets/img/icons/padd.png"></div>
+    <div *ngIf="user.isAddFavorite == '1'" (click)="addFavorites(user)" class="favorite-profile-btn add"><img
+            src="assets/img/icons/cap.png"></div>
+    <div *ngIf="api.videoShow" class="video-chat-btn" (click)="toVideoChat()">
+    </div>
+
 </div>
 <ion-content>
 
@@ -34,7 +37,7 @@
         <div class="photos" [ngStyle]="{ 'direction': 'ltr'}">
             <ion-slides pager="true">
                 <ion-slide *ngFor="let usr of photos; let i = index">
-                    <div tappable (click)="fullPagePhotos(i)" [ngStyle]="{ 'background-image': 'url('+ usr?.url+ ')'}"
+                    <div tappable (click)="fullPagePhotos(i)" [ngStyle]="{ 'background-image': 'url('+ usr?.large+ ')'}"
                          class="avatar"></div>
                 </ion-slide>
             </ion-slides>
@@ -180,12 +183,12 @@
 
                     <div *ngIf="user.about?.value" class="profile-sub-title">{{user.about?.label }}</div>
                     <li *ngIf="user.about?.value">
-                        <span id="user-about" class="three">{{user.about?.value}}<!--{{setHtml('user-about',user.about?.value) }}--></span>
+                        <span id="user-about" class="three" [innerHTML]="user.about.value"><!--{{setHtml('user-about',user.about?.value) }}--></span>
                     </li>
 
                     <div class="profile-sub-title">{{user.lookingFor?.label }}</div>
                     <li *ngIf="user.lookingFor?.value">
-                        <span id="user-lookingFor">{{user.lookingFor?.value}} <!--{{ setHtml('user-lookingFor',user.lookingFor?.value )}}--></span>
+                        <span id="user-lookingFor" [innerHTML]="user.lookingFor?.value"> <!--{{ setHtml('user-lookingFor',user.lookingFor?.value )}}--></span>
                     </li>
 
 

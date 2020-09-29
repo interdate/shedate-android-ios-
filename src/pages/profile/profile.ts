@@ -69,7 +69,7 @@ export class ProfilePage {
             }
             this.user = user;
             this.photos = this.user.photos;
-            console.log(this.photos);
+            //console.log(this.photos);
 
             this.http.get(api.url + '/user/profile/' + this.user.id, api.setHeaders(true)).subscribe(data => {
                 this.user = data.json();
@@ -136,24 +136,37 @@ export class ProfilePage {
         this.content.scrollTo(0, this.content.getContentDimensions().scrollHeight, 300);
     }
 
+
     addFavorites(user) {
+        let params, url;
 
-        if (user.isAddFavorite == false) {
-            user.isAddFavorite = true;
-
-            let params = JSON.stringify({
+        if (user.isAddFavorite == '0') {
+            this.user.isAddFavorite = '1';
+            //user.isAddFavorite = '1';
+            params = JSON.stringify({
                 list: 'Favorite'
             });
 
-            this.http.post(this.api.url + '/user/managelists/favi/1/' + user.id, params, this.api.setHeaders(true)).subscribe(data => {
-                let toast = this.toastCtrl.create({
-                    message: data.json().success,
-                    duration: 3000
-                });
+            url = this.api.url + '/user/managelists/favi/1/' + user.id;
 
-                toast.present();
+        } else {
+            this.user.isAddFavorite = '0';
+            //user.isFav = '0';
+            params = JSON.stringify({
+                list: 'Unfavorite'
             });
+
+            url = this.api.url + '/user/managelists/favi/0/' + user.id;
         }
+
+        this.api.http.post(url, params, this.api.setHeaders(true)).subscribe((data: any) => {
+            let toast = this.toastCtrl.create({
+                message: data.json().success,
+                duration: 3000
+            });
+
+            toast.present();
+        });
     }
 
     blockSubmit() {
@@ -218,6 +231,10 @@ export class ProfilePage {
             ]
         });
         alert.present();
+    }
+
+    toVideoChat() {
+        this.api.openVideoChat({id: this.user.id, chatId: 0, alert: false, username: this.user.userrNick});
     }
 
     fullPagePhotos(i) {

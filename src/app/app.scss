@@ -29,6 +29,11 @@
   margin: 0 auto;
 }
 
+.alert-call{
+  max-width: 30px;
+  max-height: 30px;
+}
+
 .menu-top {margin-top: 43px;}
 
  .banner {
@@ -46,6 +51,15 @@
 input, textarea {
   direction: rtl;
 }
+
+.redCall{
+  color: red !important;
+}
+.greenCall{
+  color: green !important;
+  font-weight: bold !important;
+}
+
 
 .contact-arrow.icon.icon-md.ion-ios-arrow-forward.item-icon {
   font-size: 2.5rem;
@@ -834,6 +848,18 @@ ion-footer.footer-ios::before {
   background-image: none;
 }
 
+.redCall{
+  color: red !important;
+}
+.greenCall{
+  color: green !important;
+  font-weight: bold !important;
+}
+
+#audio-call{
+  display: none !important;
+}
+
 @media (max-width: 375px) {
   
   .footer-menu .menu-two li {
@@ -860,4 +886,25 @@ ion-footer.footer-ios::before {
 
 ion-content .padding-bottom{
   padding-bottom: 40px !important;
+}
+
+.social {
+  display: flex;
+  margin-top: 20px;
+  justify-content: center;
+
+  .facebook , .instagram {
+    margin: 0 24px;
+  }
+
+  .instagram ion-icon {
+    width: 17px;
+    zoom: 2;
+    color: white;
+  }
+
+  img{
+    width: 29px;
+    height: 29px;
+  }
 }

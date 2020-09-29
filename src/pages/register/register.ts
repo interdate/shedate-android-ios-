@@ -1,5 +1,5 @@
 import {Component, ViewChild} from "@angular/core";
-import {ActionSheetController, Content, NavController, NavParams, Platform} from "ionic-angular";
+import {ActionSheetController, Content, ModalController, NavController, NavParams, Platform} from "ionic-angular";
 import {ApiQuery} from "../../library/api-query";
 import * as $ from "jquery";
 import {Http} from "@angular/http";
@@ -7,6 +7,7 @@ import {Http} from "@angular/http";
 import {HomePage} from "../home/home";
 import {Page} from "../page/page";
 import {ChangePhotosPage} from "../change-photos/change-photos";
+import {SelectPage} from "../select/select";
 declare var setSelect2;
 
 @Component({
@@ -35,36 +36,68 @@ export class RegisterPage {
     }
 
     getStep(step): void {
-        this.user.step = step;
-        this.sendForm();
+        if(this.login == 'login') {
+            this.user.step = step;
+            this.sendForm();
+        }
+    }
+
+    openSelect(field, index) {
+        if(typeof field == 'undefined'){
+            field = false;
+        }
+
+        let profileModal = this.api.modalCtrl.create(SelectPage, {data: field});
+
+        profileModal.present();
+
+        profileModal.onDidDismiss(data => {
+
+            if (data) {
+                let choosedVal = data.val.toString();
+                this.user[field.name] = choosedVal;
+                if(field.name.indexOf('userBirthday') == -1) {
+                    this.form.fields[index]['valLabel'] = data.label.toString();
+                    if(this.form.fields[index]['name'] == 'userCity'){
+                        this.form.fields[index]['valLabel'] = data.label.toString();
+                        this.form.fields[index]['val'] = data.label.toString();
+                        this.user.userCity = data.label.toString();
+
+                    }else{
+                        this.form.fields[index]['valLabel'] = data.label.toString();
+                        this.form.fields[index]['val'] = choosedVal;
+                    }
+                }else{
+                    for(let i=0; i<3; i++){
+                        if(field.name == this.form.fields[index]['sel'][i].name){
+                            this.form.fields[index]['sel'][i]['valLabel'] = data.label;
+                        }
+                    }
+                }
+            }
+                //this.form.fields[6].label = '*מספר טלפון';
+        });
     }
 
     sendForm() {
         this.api.showLoad();
-        var header = this.api.setHeaders((this.login == 'login') ? true : false);
-        if (typeof this.user != 'undefined') {
-            this.form.fields.forEach(field => {
-                if (field.type == 'select') {
-                    this.user[field.name] = $('#' + field.name).val();
-                }
-                //console.log(field);
-                if (field.type == 'selects') {
-                    field.sel.forEach(select => {
-                        this.user[select.name] = $('#' + select.name).val();
-                    });
-                }
-            });
-        }
+        let header = this.api.setHeaders((this.login == 'login') );
+        this.form.fields.forEach(field => {
 
+            if (field.type == 'selects') {
+                field.sel.forEach(select => {
+                    // this.user[select.name] = $('#' + select.name).val();
+                    console.log(select);
+                    console.log(this.user[field.name]);
+                });
+            }
+        });
 
         this.http.post(this.api.url + '/user/register', this.user, header).subscribe(
             data => {
-
-                //this.form = {};
                 $('#labelconfirmMails').remove();
                 this.form = data.json().form;
                 this.user = data.json().user;
-
                 this.errors = data.json().errors;
 
                 if (this.user.step == 4) {
@@ -75,7 +108,6 @@ export class RegisterPage {
                     this.api.storage.set('username', this.user.userNick);
                     this.api.storage.set('fingerAuthLogin', this.user.userNick);
                     this.api.storage.set('password', this.user.userPass);
-                    //alert(JSON.stringify(this.user.photos));
                     let that = this;
                     setTimeout(function () {
                         that.api.hideLoad();
@@ -150,8 +182,6 @@ export class RegisterPage {
     ionViewWillEnter() {
         this.api.pageName = 'RegisterPage';
 
-
-        //this.api.activePageName = 'ContactPage';
         $('#back').show();
         this.api.storage.get('status').then((val) => {
             this.login = val;
@@ -178,14 +208,8 @@ export class RegisterPage {
     }
 
     inputClick(id) {
-
         let that = this;
         that.content.resize();
-        setTimeout(function () {
-            that.content.scrollTo(600, 0, 300);
-            $('#' + id).focus();
-        }, 400);
-
     }
 
     goToHome() {

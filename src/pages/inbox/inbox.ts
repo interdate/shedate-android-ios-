@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams, LoadingController} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, LoadingController, ToastController} from 'ionic-angular';
 import {ApiQuery} from '../../library/api-query';
 import {Http} from '@angular/http';
 
@@ -24,16 +24,16 @@ export class InboxPage {
                 public navParams: NavParams,
                 public http: Http,
                 public loadingCtrl: LoadingController,
-                public api: ApiQuery) {
+                public api: ApiQuery,
+                public toastCtrl: ToastController) {
 
-        let loading = this.loadingCtrl.create({
-            content: 'אנא המתיני...'
-        });
-        loading.present();
+        this.api.showLoad()
 
         this.http.get(this.api.url + '/user/contacts/perPage:200/page:1', this.api.setHeaders(true)).subscribe(data => {
             this.users = data.json().allChats;
-            loading.dismiss();
+            this.api.hideLoad();
+        }, error => {
+            this.api.hideLoad();
         });
     }
 
@@ -45,7 +45,34 @@ export class InboxPage {
         this.api.pageName = 'InboxPage';
     }
 
+    deleteDialog(event, user) {
+        const cache = this.users;
+        this.users = this.users.filter((elem: any) => elem.user.userId != user.user.userId);
+
+        this.http.get(this.api.url + '/user/messenger/inbox/delete/' + user.user.userId, this.api.header).subscribe((res: any) => {
+           res = res.json();
+
+           this.toastCtrl.create({
+                message: res.message,
+                dismissOnPageChange: true,
+                showCloseButton: true,
+               closeButtonText: 'סגור',
+                duration: 2500,
+            }).present();
+
+            if (!res.success) {
+                this.users = cache;
+            }
+        }, () => {
+            this.users = cache;
+        });
+
+        event.stopPropagation();
+    }
+
     toDialogPage(user) {
+        console.log(user)
+        user.newMessagesCount = 0;
         this.navCtrl.push('DialogPage', {user: user.user});
     }
 

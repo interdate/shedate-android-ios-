@@ -20,7 +20,10 @@
     <div *ngIf="user.isAddFavorite == '0' && user.id " tappable (click)="addFavorites(user)"
          class="favorite-profile-btn">
       <img src="assets/img/icons/padd.png"></div>
-    <div *ngIf="user.isAddFavorite == '1'" class="disabled favorite-profile-btn"><img src="assets/img/icons/padd.png"></div>
+
+    <div *ngIf="user.isAddFavorite == '1'" class="add favorite-profile-btn" tappable (click)="addFavorites(user)"><img src="assets/img/icons/cap.png"></div>
+    <div *ngIf="api.videoShow" class="video-chat-btn" (click)="toVideoChat()">
+    </div>
   </div>
   <div class="close-warp" tappable (click)="goBack()">
     <div class="close"><img alt="close" src="assets/img/icons/psclose.png"></div>

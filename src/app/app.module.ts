@@ -28,6 +28,11 @@ import {AndroidFingerprintAuth} from "@ionic-native/android-fingerprint-auth";
 import {AdminMessagesPageModule} from "../pages/admin-messages/admin-messages.module";
 import {ProfilePage} from "../pages/profile/profile";
 import {AppVersion} from "@ionic-native/app-version";
+import {ActivationPage} from "../pages/activation/activation";
+import { AndroidPermissions } from '@ionic-native/android-permissions';
+import {SelectPageModule} from "../pages/select/select.module";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
+import {InAppPurchase} from "@ionic-native/in-app-purchase";
 
 
 
@@ -37,18 +42,20 @@ import {AppVersion} from "@ionic-native/app-version";
         HomePage,
         LoginPage,
         ApiQuery,
-        ProfilePage
+        ProfilePage,
+        ActivationPage
     ],
     imports: [
         BrowserModule,
        IonicModule.forRoot(MyApp, {
             menuType: 'overlay',
             scrollAssist: false,
-            autoFocusAssist: true
+            autoFocusAssist: false
         }),
         IonicStorageModule.forRoot(),
         HttpModule,
         RegisterPageModule,
+        SelectPageModule,
         PageModule,
         ChangePhotosPageModule,
         AdvancedsearchPageModule,
@@ -62,15 +69,19 @@ import {AppVersion} from "@ionic-native/app-version";
         MyApp,
         HomePage,
         LoginPage,
-        ProfilePage
+        ProfilePage,
+        ActivationPage
     ],
     providers: [
         Nav,
         Keyboard,
         StatusBar,
+        AndroidPermissions,
         SplashScreen,
         AndroidFingerprintAuth,
+        InAppPurchase,
         Device,
+        InAppBrowser,
         Geolocation,
         ImagePicker,
         FileTransfer,

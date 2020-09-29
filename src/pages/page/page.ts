@@ -32,7 +32,7 @@ export class Page {
           console.log('page: ', data.json());
           this.page = data.json().success;
           this.api.hideLoad();
-          $('#content').html(this.page.pageText);
+          //$('#content').html(this.page.pageText);
           //this.content.scrollToTop(300);
         }, err => {
           console.log('register: ', err);

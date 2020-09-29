@@ -72,6 +72,7 @@ export class ContactUsPage {
             var params = {
                 userId: this.user_id ? this.user_id : 'Unknown',
                 messageToAdmin: this.form.form.text.value,
+                subjectToAdmin: this.form.form.subject.value,
                 userEmail : this.form.form.email.value,
                 logged_in: this.logged_in
             };

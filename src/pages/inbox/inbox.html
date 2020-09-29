@@ -16,9 +16,9 @@
     
     <ion-content padding>
         <div [ngClass]="{'padding-bottom': api.banner?.src && api.banner?.link}">
-            <div class="no_results" *ngIf="!users">{{ texts?.no_results }}</div>
-            <ion-card *ngFor="let user of users" (click)="toDialogPage(user)">
-              <ion-card-content [ngClass]="{'highlight': user.user.userId==='468385291'}">
+            <div class="no_results" *ngIf="users?.length == 0">אין הודעות</div>
+            <ion-card  *ngFor="let user of users" [ngClass]="{'highlight': user.user.userId==='468385291'}" (click)="toDialogPage(user)">
+              <ion-card-content>
               <div class="usr_img" *ngIf="user.user.mainImage" [ngStyle]="{ 'background-image': 'url('  + user.user.mainImage?.url + ')'}" ></div>
               <div class="usr_img" *ngIf="user.user.noPhoto" [ngStyle]="{ 'background-image': 'url(' + api.url  + user.noPhoto + ')'}" ></div>
                 <ion-card-title>
@@ -32,6 +32,8 @@
                   <div class="counter" *ngIf="user.newMessagesCount > 0" >{{ user.newMessagesCount }}</div>
                 </div>
               </ion-card-content>
+                <ion-icon class="delete" name="ios-trash-outline" (click)="deleteDialog($event,user)"></ion-icon>
+                <div class="clear"></div>
             </ion-card>
         </div>
     </ion-content>

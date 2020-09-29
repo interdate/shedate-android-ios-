@@ -14,6 +14,7 @@ import {ApiQuery} from "../../library/api-query";
 import {Http} from "@angular/http";
 import {Storage} from "@ionic/storage";
 import {HomePage} from "../home/home";
+import {ActivationPage} from "../activation/activation";
 
 
 /**
@@ -53,25 +54,18 @@ export class ChangePhotosPage {
                 public  fileTransfer: FileTransfer,
                 public imagePicker: ImagePicker) {
 
+        this.api.hideLoad();
         if (navParams.get('new_user')) {
             this.new_user = 1;
             this.api.storage.set('new_user', 1);
         }
-        this.storage.get('user_id').then((val) => {
+        this.storage.get('user_id').then(() => {
             this.storage.get('username').then((username) => {
                 this.username = username;
             });
             this.storage.get('password').then((password) => {
                 this.password = password;
             });
-        });
-
-        this.storage.get('new_user').then((val) => {
-            if (val) {
-                this.new_user = val;
-            }else{
-                this.new_user = false;
-            }
         });
 
         if (navParams.get('username') && navParams.get('password')) {
@@ -111,9 +105,9 @@ export class ChangePhotosPage {
     getPageData() {
 
         this.http.get(this.api.url + '/user/images', this.api.setHeaders(true, this.username, this.password)).subscribe(data => {
-
+            this.api.isActivated = data.json().isActivated;
             this.dataPage = data.json();
-            //this.description = data.json().texts.description;
+            this.description = data.json().texts.description;
             this.photos = data.json().images.items;
         }, err => {
             //alert(JSON.stringify(err));
@@ -126,13 +120,14 @@ export class ChangePhotosPage {
 
     postPageData(type, params) {//not active
         var data: any;
+        var action: string;
         if (type == 'setMain') {
-            var action = "setMain";
+            action = "setMain";
             console.log('Param', params);
             data = JSON.stringify({setMain: params.id});
 
         } else if ('deletePage') {
-            var action = "delete";
+            action = "delete";
             data = JSON.stringify({
                 //delete: params.id
             });
@@ -249,6 +244,7 @@ export class ChangePhotosPage {
 
     openCamera() {
         let cameraOptions = {
+            allowEdit: true,
             quality: 100,
             destinationType: this.camera.DestinationType.FILE_URI,
             sourceType: this.camera.PictureSourceType.CAMERA,
@@ -313,10 +309,15 @@ export class ChangePhotosPage {
         });
     }
 
-    onHomePage() {
+    onHomePage(isFromRegistr = false) {
         this.storage.remove('new_user');
-        this.navCtrl.push(HomePage);
+        if (isFromRegistr) {
+            this.navCtrl.push(ActivationPage)
+        } else {
+            this.navCtrl.push(HomePage);
+        }
     }
+
 
     ionViewDidLoad() {
         console.log('ionViewDidLoad ChangePhotosPage');

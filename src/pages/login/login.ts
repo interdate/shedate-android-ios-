@@ -1,5 +1,5 @@
 import {Component} from "@angular/core";
-import {IonicPage, NavController, NavParams, LoadingController, ToastController, Platform} from "ionic-angular";
+import {IonicPage, NavController, NavParams, LoadingController, ToastController, AlertController} from "ionic-angular";
 import {HomePage} from "../home/home";
 import {ApiQuery} from "../../library/api-query";
 import {Storage} from "@ionic/storage";
@@ -9,6 +9,9 @@ import "rxjs/add/operator/catch";
 import "rxjs/add/operator/map";
 import {RegisterPage} from "../register/register";
 import * as $ from "jquery";
+
+import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
+
 
 /**
  * Generated class for the LoginPage page.
@@ -21,16 +24,18 @@ import * as $ from "jquery";
 @Component({
     selector: 'page-login',
     templateUrl: 'login.html',
+    providers: [Facebook]
 })
 export class LoginPage {
 
-    form: { errors: any, login: any } = {errors: {}, login: {username: {label: ''}, password: {label: ''}}};
+    form: any;
     errors: any;
     header: RequestOptions;
     user: any = {id: '', name: ''};
     fingerAuth: any;
     enableFingerAuth: any;
     disableFingerAuthInit: any;
+    fbId: any;
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
@@ -40,7 +45,10 @@ export class LoginPage {
                 public loadingCtrl: LoadingController,
                 public toastCtrl: ToastController,
                 private androidFingerprintAuth: AndroidFingerprintAuth,
-                private platform: Platform,) {
+                // private googlePlus: GooglePlus,
+                private fb: Facebook,
+                public alertCtrl: AlertController
+                ) {
 
         this.http.get(api.url + '/user/form/login/', api.setHeaders(false)).subscribe(data => {
             this.form = data.json();
@@ -56,13 +64,11 @@ export class LoginPage {
             let that = this;
             setTimeout(function () {
                 that.storage.get('fingerAuth').then((val) => {
-                    //alert(val);
                     if (val) {
                         that.fingerAuth = val;
                     }
                 });
             }, 10);
-
         });
 
         this.storage = storage;
@@ -83,22 +89,17 @@ export class LoginPage {
     }
 
     formSubmit() {
-        this.form.login.username.value = this.user.name;
-        let username = encodeURIComponent(this.form.login.username.value);
-        let password = encodeURIComponent(this.form.login.password.value);
 
-        //alert(encodeURIComponent(this.form.login.username.value));
 
-        if (username == "") {
-            username = "nologin";
+        let data = {};
+        if(this.fbId) {
+             data = {
+                facebook_id: this.fbId
+            }
         }
 
-        if (password == "") {
-            password = "nopassword";
-        }
-
-
-        this.http.post(this.api.url + '/user/login/', '', this.setHeaders()).map((res: Response) => res.json()).subscribe(data => { //.map((res: Response) => res.json())
+        this.http.post(this.api.url + '/user/login/', data, this.setHeaders()).map((res: Response) => res.json()).subscribe(data => { //.map((res: Response) => res.json())
+            console.log(data);
 
 
             setTimeout(function () {
@@ -132,8 +133,6 @@ export class LoginPage {
             data = {status: 'login', username: this.form.login.username.value}
         }
 
-        //alert('test: '+ JSON.stringify(data));
-
         this.storage.get('enableFingerAuth').then((enableFingerAuth) => {
 
             if (enableFingerAuth && enableFingerAuth == 1) {
@@ -161,7 +160,6 @@ export class LoginPage {
 
                         if (result.isAvailable) {
 
-                            //alert(JSON.stringify(data));
                             // it is available
                             this.androidFingerprintAuth.encrypt({
                                 clientId: 'com.interdate.shedate',
@@ -233,21 +231,24 @@ export class LoginPage {
         });
     }
 
+
+
+
     validate(response) {
 
         if (response.status != "not_activated") {
-            this.storage.set('username', this.form.login.username.value);
+            this.storage.set('username', response.userNick);
             this.storage.set('password', this.form.login.password.value);
             this.storage.set('status', response.status);
             this.storage.set('user_id', response.id);
             this.storage.set('user_photo', response.photo);
 
-            this.api.setHeaders(true, this.form.login.username.value, this.form.login.password.value);
+            this.api.setHeaders(true, response.userNick, this.form.login.password.value);
         }
         if (response.status == "login") {
             let data = {
                 status: 'init',
-                username: this.form.login.username.value,
+                username: response.userNick,
                 password: this.form.login.password.value
             };
             this.fingerAuthentication(data);
@@ -255,7 +256,7 @@ export class LoginPage {
             this.storage.set('user_photo', response.photo);
             this.navCtrl.setRoot(HomePage, {
                 params: 'login',
-                username: this.form.login.username.value,
+                username: response.userNick,
                 password: this.form.login.password.value
             });
 
@@ -269,7 +270,7 @@ export class LoginPage {
             });
 
             toast.present();
-            this.navCtrl.push('RegistrationPage', {
+            this.navCtrl.push('RegisterPage', {
                 user: this.user,
                 username: this.form.login.username.value,
                 password: this.form.login.password.value
@@ -305,4 +306,114 @@ export class LoginPage {
         $('.back-btn').hide();
     }
 
+
+
+    loginFB() {
+        this.fb.getLoginStatus().then((
+            res: FacebookLoginResponse) => {
+            console.log('Logged into Facebook!', res);
+            // alert(JSON.stringify(res));
+            if(res.status == 'connected') {
+                this.getFBData(res);
+            }else{
+                this.fb.login(['email','public_profile']).then((
+                    fbres: FacebookLoginResponse) => {
+                    console.log('Logged into Facebook!', fbres);
+                    this.getFBData(fbres);
+                }).catch(e => console.log('Error logging into Facebook', e));
+            }
+        }).catch(e => console.log('Error logging into Facebook', e));
+    }
+
+    getFBData(status) {
+        this.fb.api('/me?fields=email,gender,id', ['email','public_profile']).then(
+            res => {
+                this.checkBFData(res);
+                // alert(JSON.stringify(res))
+            }).catch(e => console.log('Error getData into Facebook '+ e));
+    }
+
+    checkBFData(fbData) {
+        console.log(fbData);
+        this.form.login.username.value = '';
+        this.form.login.password.value = '';
+        let postData = JSON.stringify({facebook_id: fbData.id});
+        this.api.http.post(this.api.url + '/user/login/', postData, this.setHeaders()).subscribe((data: any) => {
+            console.log(data);
+            data = data.json();
+            if (data.user.login == '1') {
+                this.storage.set('username', data.user.username);
+                this.storage.set('password', data.user.password);
+                this.storage.set('status', data.status);
+                this.storage.set('user_id', data.user.user_id);
+                this.storage.set('user_photo', data.user.photo);
+
+                let fingerData = {
+                    status: 'init',
+                    username: data.user.username,
+                    password: data.user.password,
+                };
+                this.fingerAuthentication(fingerData);
+
+                this.storage.set('user_photo', data.user.photo);
+                this.navCtrl.setRoot(HomePage, {
+                    params: 'login',
+                    username: data.user.username,
+                    password: data.user.password,
+                }).then(res => {
+                    console.log(res)
+                }).catch(err => console.log(err));
+
+
+                this.api.setHeaders(true, data.user.username, data.user.password);
+                let that = this;
+                // setTimeout( () => {
+                 that.navCtrl.push(HomePage);
+                // }, 5000 );
+                this.api.storage.get('deviceToken').then((deviceToken) => {
+                    if (deviceToken) this.api.sendPhoneId(deviceToken);
+                });
+            }
+        }, (err: any) => {
+                this.alertCtrl.create({
+                    title: this.form.facebook.pop_header,
+                    message: this.form.facebook.pop_message,
+                    buttons: [
+                        {
+                            text: this.form.facebook.pop_button,
+                            handler: () => {
+                                let data = JSON.stringify({
+                                    userEmail: fbData.email,
+                                    facebook_id: fbData.id
+                                });
+                                this.navCtrl.push(RegisterPage, {user: data})
+                            }
+                        },
+                        {
+                            text: this.form.facebook.pop_cancel,
+                            role: 'cancel',
+                            handler: () => this.fbId = fbData.id
+                        }
+                    ]
+                }).present();
+
+
+        });
+    }
+
+    test() {
+
+        this.checkBFData({id: 123});
+        // const user = JSON.stringify({
+        //     facebook_id: 123,
+        //     userEmail: 'test@interdate.co.il'
+        // })
+        //
+        // this.navCtrl.push(RegisterPage, {user: user});
+    }
+
 }
+
+
+
+

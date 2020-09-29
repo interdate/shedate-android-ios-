@@ -13,9 +13,13 @@
 </ion-header>
 
 <ion-content padding>
-    <!--<div class="description" *ngIf="photos?.length == 1 && dataPage.noPhoto == dataPage.photos[0].face">
-        <div #desk>{{safeHtml(desk)}}</div>
+
+    <!--<div class="description" *ngIf="photos?.length == 1">
+        <div #description>{{safeHtml(description)}}</div>
     </div>-->
+    <div class="description" *ngIf="photos?.length == 0 ">
+        <div [innerHTML]="description"></div>
+    </div>
     <div class="photos">
         <div *ngFor="let photo of photos">
             <div *ngIf="photo.main == '1'" class="main photo"
@@ -28,6 +32,9 @@
                         <ion-icon name="create"></ion-icon>
                     </div>
                 </div>
+                <div class="small-status-text {{ photo.isValid == 1 ? 'valid' : 'waiting' }}">
+                    {{ photo.isValid == 1 ? 'תמונה מאושרת' : 'ממתינה לאישור' }}
+                </div>
             </div>
         </div>
 
@@ -39,6 +46,9 @@
               <div class="remove">
                         <ion-icon name="create"></ion-icon>
                     </div>
+                </div>
+                <div class="small-status-text {{ photo.isValid == 1 ? 'valid' : 'waiting' }}">
+                    {{ photo.isValid == 1 ? 'תמונה מאושרת' : 'ממתינה לאישור' }}
                 </div>
             </div>
         </div>
@@ -64,11 +74,16 @@
         </div>
     </div>
 
-    <div *ngIf="new_user" class="login-btn">
-        <button color="danger" (click)=onHomePage() ion-button block>סיום הרשמה</button>
+    <div class="clear"></div>
+
+    <div *ngIf="!api.isActivated" class="login-btn">
+        <button color="danger" (click)=onHomePage(true) ion-button block>סיום הרשמה</button>
     </div>
-    <div *ngIf="!new_user" class="login-btn">
+    <div *ngIf="api.isActivated" class="login-btn">
         <button color="danger" (click)=onHomePage() ion-button block>סיום עריכה</button>
+    </div>
+    <div class="description" *ngIf="photos?.length >= 1 ">
+        <div [innerHTML]="description"></div>
     </div>
 </ion-content>
 <ion-footer>

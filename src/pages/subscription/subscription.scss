@@ -1,3 +1,529 @@
 page-subscription {
+  h2.hilight {
+    color: #e82244;
+    font-size: 17px;
+    text-align: center;
+  }
+
+  .links {
+    margin-bottom: 90px;
+
+    ul { list-style-type: none }
+
+    li {
+      text-align: center;
+      color: #0000ff;
+      text-decoration: underline;
+    }
+  }
+
+  .content-md, .content-ios {
+    background-color: #fff;
+    color: #0a0a0a !important;
+  }
+
+  .caution {text-align: right}
+
+  .highlight { color: #e82244; font-weight: bold;}
+
+  .caution a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  .android#innerPageHolder, .vip {
+    //background: url(https://m.richdate.co.il/images/innerPage.png) repeat-x #292929;
+    background-image: url("../assets/img/bg_payment.png");
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+    width: 100%;
+    height: auto;
+    padding: 25px 0 5px 0;
+  }
+
+  .android#innerPageHolder h2, .vip h2 {
+    height: 24px;
+    //background: url(https://m.richdate.co.il/images/h2Pipe.png) repeat-x bottom;
+    font-size: 24px;
+    font-weight: bold;
+    color: #e82244;
+    margin: 0;
+    padding: 4px;
+    line-height: 10px;
+  }
+
+  .vip {
+    padding: 0.05px 3% 10px;
+  }
+
+  .vip h2 {
+    text-align: center;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    white-space: nowrap;
+    font-size: 30px;
+  }
+
+  .vip p {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  .textBefore {
+    padding-right: 25px;
+  }
+
+  ul {
+    text-align: right;
+    list-style-type: disc;
+  }
+
+  .vip {
+    .sub {
+      width: 100%;
+      margin: 20px 0px 25px;
+      padding: 10px 20px 25px;
+      background-image: url("../assets/img/bg_vip.png");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      min-height: calc(96vw * 1.15);
+    }
+
+    .sub .title {
+      color: #fff;
+      font-size: 35px;
+      padding-left: 100px;
+      text-align: left;
+      position: relative;
+      letter-spacing: -2px;
+      font-family: arial hebrew;
+      line-height: 1;
+      height: 40px;
+      overflow: hidden;
+      padding-top: 8px;
+      font-weight: 200;
+    }
+
+    .sub .price {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      margin: 20px auto;
+      border: 5px #fff solid;
+      border-radius: 50%;
+      color: #fff;
+      text-align: center;
+      font-size: 60px;
+      letter-spacing: 0px;
+      font-family: Myrlad Pro;
+      background-color: #b10884;
+      line-height: 50px;
+      padding-top: 14px;
+
+      span {
+        display: block;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: "Arial Hebrew";
+        line-height: 1;
+        letter-spacing: 0px;
+      }
+
+      span.pr {
+        position: absolute;
+        left: 20px;
+        bottom: 37px;
+        font-size: 16px;
+      }
+    }
+
+    .sub .options {
+      position: relative;
+      font-family: "Arial Hebrew";
+      color: #fff;
+      text-align: center;
+      font-size: 15px;
+
+      div {
+        background-image: url("../assets/img/v_vip.png");
+        background-repeat: no-repeat;
+        background-position: calc(100% - 15px) top;
+        background-size: auto 18px;
+        padding: 7px 0px;
+      }
+    }
+
+    .button-ok {
+      margin: 15px auto;
+      width: 200px;
+      text-align: center;
+      color: #fff;
+      font-family: "Arial Hebrew";
+      font-size: 26px;
+      font-weight: bold;
+      background: #244b98;
+      line-height: 40px;
+      border-radius: 3px;
+      box-shadow: 0px 0px 6px #000;
+    }
+
+    .button-cancel {
+      margin: 15px auto;
+      width: 200px;
+      text-align: center;
+      font-family: "Arial Hebrew";
+      line-height: 40px;
+      border-radius: 3px;
+      box-shadow: 0px 0px 6px #000;
+      color: #000;
+      background: #ced0d4;
+      font-size: 18px;
+    }
+
+    .button-back {
+      text-align: center;
+      color: #000;
+      text-decoration: underline;
+    }
+  }
+
+  .android {
+
+
+    #massBoxIn {
+      width: 90%;
+      height: auto;
+      margin: 0 auto;
+      padding: 0;
+      min-height: 355px;
+    }
+
+    h2 {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 2.1em;
+      line-height: 1.4em;
+      letter-spacing: normal;
+      margin-bottom: 20px;
+      padding: .1em 0;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .subs a {
+      width: 170px;
+      height: 67px;
+      display: block;
+      padding-right: 30px;
+      padding-top: 5px;
+      color: black;
+      font-size: 11px;
+      line-height: 12px;
+      font-weight: normal;
+    }
+
+    .subsTitle {
+      font-size: 18px;
+      color: #bd1f95;
+      font-weight: Bold;
+      line-height: 18px;
+      display: block;
+      padding-bottom: 2px;
+    }
+
+    .subsPrice {
+      position: absolute;
+      top: 25px;
+      left: 2px;
+      font-size: 17px;
+      color: #b72095;
+      font-weight: bold;
+    }
+
+    .subsPrice span {
+      font-size: 35px;
+      font-weight: normal;
+    }
+
+    .subsPrice span.month {
+      font-size: 17px;
+      display: block;
+      line-height: 20px;
+      font-weight: bold;
+    }
+
+    ion-content {
+      background-color: #292929 !important;
+    }
+
+    .subs {
+      /* background-image: url(https://www.shedate.co.il/newpayment/product_bg.png); */
+      background-repeat: no-repeat;
+      background-color: #f9bccc5c;
+      width: 100%;
+      height: auto;
+      padding: 12px 0;
+      cursor: pointer;
+      margin: 0 auto;
+      background-size: contain;
+      margin-bottom: 16px;
+      border-radius: 16px;
+      border: 2px solid #ddd;
+      box-shadow: 0 7px 30px -10px rgba(150,170,180,0.5);
+    }
+
+    .subs .left {
+      width: 25%;
+      height: 80px;
+      clear: both;
+      border-radius: 5px 0px 0px 5px;
+    }
+
+    .subs .left div {
+      padding: 10px 0;
+      width: 65px;
+      height: 65px;
+      text-align: center;
+      font-size: 30px;
+      color: #e82244;
+      letter-spacing: -2px;
+      position: relative;
+      font-family: arial;
+    }
+
+    .month {
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0px;
+      margin-top: -8px;
+      display: block;
+    }
+
+    .subs .left div span.pr {
+      font-size: 16px;
+      position: absolute;
+      top: calc(50% - 11px);
+      left: 0;
+    }
+
+    .subs .ui-link {
+      width: 75%;
+      height: 80px;
+      padding-right: 2px;
+
+    }
+
+    .subs .ui-link .subsTitle {
+      display: block;
+      padding: 7px 10px 7px 0px;
+      color: #e82244;
+      border-radius: 0 5px 0px 0px;
+      font-family: "Arial Hebrew";
+    }
+
+    .subs .ui-link p {
+      padding: 1px 10px 1px 10px;
+      color: #000;
+      font-family: "Arial Hebrew";
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .pay .subs .left {
+      color: #e82244
+    }
+
+
+
+    .pay .subs:first-child + .subs + .subs + .subs + .subs span.month {
+      //display: none;
+      font-size: 0px;
+    }
+
+    .pay .subs:first-child + .subs + .subs + .subs + .subs span.month:before {
+      content: "לשבועיים";
+      font-size: 11px;
+      display: block;
+      font-weight: bold;
+    }
+
+    .pay .subs:first-child + .subs + .subs + .subs + .subs .left div span.pr {
+      top: calc(50% - 6px);
+      right: auto;
+      left: 0;
+    }
+
+    .pay .subs .left div span.pr.sale {
+      top: calc(50% + 1px);
+      right: auto;
+      left: 3px;
+    }
+
+  }
+
+
+  .ios {
+
+    .subscr_center {
+      color: #000;
+      width: 100%;
+    }
+
+    .link {
+      color: #c2419c;
+      text-decoration: underline;
+    }
+
+    .text {
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    ul {
+      text-align: right;
+
+      li {
+        margin-bottom: 12px;
+      }
+    }
+
+    .headline {
+      color: #ec649f;
+      background: #e3e3e3;
+      border-radius: 9px;
+      font-size: 22px;
+      padding: 5px;
+    }
+
+    .answer {
+      display: none;
+    }
+
+    .answer.highlight {
+      display: block;
+    }
+
+    .question {
+      font-weight: bold
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .subscr {
+      position: relative;
+      width: 95%;
+      height: auto;
+      border: 0 solid #F0ECE1;
+      margin: 15px auto 15px auto;
+      background: rgb(239, 231, 231);
+      font-size: 15px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      -moz-box-shadow: 2px 2px 3px rgba(236, 100, 159, 0.48);
+      -webkit-box-shadow: 2px 2px 3px rgba(236, 100, 159, 0.48);
+      box-shadow: 2px 2px 3px rgba(236, 100, 159, 0.48);
+    }
+
+    .subscr_left {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 20%;
+      height: 100%;
+      background: #FFE9AB;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+
+    .read_more, .continue {
+      color: #ec649f;
+    }
+
+    .subscr_center {
+      padding: 10px 100px 10px 20px;
+      line-height: 1.3em;
+    }
+
+    .read_more {
+      position: absolute;
+      right: 100px;
+      bottom: 0;
+    }
+
+    ul {
+      margin-top: 0;
+      -webkit-padding-start: 20px;
+      list-style-type: disc;
+    }
+
+    .continue {
+      display: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .subscr_center {
+
+      p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 32px;
+        line-height: 1;
+        margin: 0 0 10px;
+        padding-bottom: 2px;
+      }
+    }
+
+    .subscr_center.is_showed {
+      p {
+        height: auto;
+        overflow: auto;
+        margin: 0;
+      }
+
+      .read_more {
+        display: none;
+      }
+
+      .continue {
+        display: block;
+      }
+    }
+
+    .subscr_right {
+      position: absolute;
+      right: 20px;
+      top: 35px;
+      width: 100px;
+      text-align: right;
+      font-weight: bold;
+      color: #ec649f;
+    }
+  }
+
+  .form {
+    text-align: center;
+    margin-top: 10px;
+    line-height: 2;
+  }
+
+  .form input {
+    max-width: 80px;
+    margin-right: 5px;
+    color: #000;
+    line-height: 1;
+  }
+
+  .form input[type="submit"] {
+    max-width: 90%;
+    background: grey;
+    border-radius: 5px;
+    color: #fff;
+  }
 
 }

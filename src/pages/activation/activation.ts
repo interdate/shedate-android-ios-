@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import {IonicPage, NavController, NavParams, LoadingController, ToastController} from 'ionic-angular';
 import {ApiQuery} from '../../library/api-query';
 import {Http} from '@angular/http';
-import { HomePage } from '../home/home';
-import { LoginPage } from '../login/login';
+import {HomePage} from "../home/home";
+
+// import { LoginPage } from '../login/login';
 
 /**
  * Generated class for the ActivationPage page.
@@ -20,68 +21,110 @@ import { LoginPage } from '../login/login';
 export class ActivationPage {
 
   form: { errorMessage: any, res: any, description: any, success: any, submit: any, phone: { label: any, value: any }, code: { label: any, value: any } } =
-  {
-      errorMessage: '',
-      res: false,
-      description: '',
-      success: '',
-      submit: false,
-      phone: {label: '', value: ''},
-      code: {label: '', value: ''}
-  };
+      {
+        errorMessage: '',
+        res: false,
+        description: '',
+        success: '',
+        submit: false,
+        phone: {label: '', value: ''},
+        code: {label: '', value: ''}
+      };
+
+  showContact = false;
+  canResend: boolean;
+  texts: object = {};
+  code: string;
+  contact: any;
+  errors: any = {};
+  formErrors = false;
+  sendSuccess = false;
 
   constructor(public navCtrl: NavController,
               public loadingCtrl: LoadingController,
               public navParams: NavParams,
               public api: ApiQuery,
-              public http: Http) {
+              public http: Http,
+              public toastCtrl:  ToastController) {
 
-      this.getForm();
+
+    this.api.http.get(this.api.url + '/user/activation', this.api.header).subscribe((data: any) => {
+      data = data.json();
+      this.texts = data.texts;
+      this.canResend = data.canResend;
+      this.contact = data.contact;
+      console.log(this.texts);
+
+      if (this.api.isActivated) {
+          this.navCtrl.push(HomePage);
+      }
+    });
+
+
   }
 
-  getForm(data = '') {
+  activate() {
+    this.api.http.post(this.api.url + '/user/activation/activate', this.code, this.api.header).subscribe( (data: any) => {
+        data = data.json();
+        let toast = this.toastCtrl.create({
+           'message': data.message,
+           'duration': 2500,
+            dismissOnPageChange: false,
+        });
 
-      let loading = this.loadingCtrl.create({
-          content: 'אנא המתיני...'
-      });
+        toast.present();
 
-      loading.present();
-
-      this.http.post(this.api.url + '/api/v1/activations', data, this.api.setHeaders(true)).subscribe(resp => {
-          this.form = resp.json().form;
-          this.form.res = resp.json().code;
-          this.form.errorMessage = resp.json().errorMessage;
-
-          loading.dismiss();
-
-          if (this.form.res) {
-              this.api.status = 'login';
-              this.api.setStorageData({label: 'status', value: 'login'});
-              //this.navCtrl.push(RegistrationFourPage, {new_user: resp.json().register_end_button});
-              this.navCtrl.push(HomePage);
-          }
-
-      }, err => {
-          this.navCtrl.push(LoginPage);
-      });
+        if (data.success) {
+            this.navCtrl.push(HomePage);
+            this.api.isActivated = true;
+        }
+    } )
   }
 
-  formSubmit() {
-      let params = '';
-      if (this.form.submit == 'Activate') {
-          params = JSON.stringify({
-              code: this.form.code.value
-          });
-      } else {
-          params = JSON.stringify({
-              phone: this.form.phone.value
+  resend() {
+    this.api.http.get(this.api.url + '/user/activation/resend', this.api.header).subscribe( (data: any) => {
+        data = data.json();
+
+        if (data.success) this.canResend = false;
+        this.toastCtrl.create({
+            'message': data.messege,
+            'duration': 2500
+        }).present();
+    } )
+  }
+
+  sendEmail() {
+      this.showContact = false;
+      if (! (this.contact.text.value == '' || this.contact.subject.value == '')) {
+          var params = {
+              userId: 0,
+              messageToAdmin: this.contact.text.value,
+              subjectToAdmin: this.contact.subject.value,
+              userEmail : this.contact.email.value,
+              logged_in: true
+          };
+
+          this.http.post(this.api.url + '/contactUs', params, this.api.header).subscribe((res: any) => {
+              res = res.json();
+              if (!res.result) {
+                  this.showContact = true;
+              } else {
+                  this.contact.text.value = '';
+                  this.contact.subject.value = '';
+                  this.contact.email.value = '';
+                  this.toastCtrl.create({
+                      message: this.contact.successSend,
+                      duration: 2500,
+                      showCloseButton: false
+                  }).present()
+              }
           });
       }
-      this.getForm(params);
   }
 
-  ionViewDidLoad() {
-      console.log('ionViewDidLoad ActivationPage');
+  ionViewWillEnter() {
+      this.api.pageName = 'ActivationPage';
+
   }
 
 }

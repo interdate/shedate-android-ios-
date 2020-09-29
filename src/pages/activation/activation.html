@@ -1,31 +1,71 @@
 <!--
   Generated template for the ActivationPage page.
-
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
 <ion-header>
-  
-      <ion-navbar>
-          <ion-title>activation</ion-title>
-      </ion-navbar>
-  
-  </ion-header>
-  
-  
-  <ion-content>
-      <div *ngIf="form.submit">
-          <div padding>{{ form.description }}</div>
-          <ion-item>
-              <ion-input *ngIf="form.phone" [(ngModel)]="form.phone.value"
-                         placeholder="{{ form.phone.label }}"></ion-input>
-              <ion-input *ngIf="form.code" [(ngModel)]="form.code.value"
-                         placeholder="{{ form.code.label }}"></ion-input>
-          </ion-item>
-          <div class="err">{{ form.errorMessage }}</div>
-  
-              <button (click)="formSubmit()" right color="danger" full ion-button>{{form.submit}}
-              </button>
-  
+
+  <ion-navbar>
+    <ion-title>activation</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <div class="activation-container">
+
+
+    <form class="ui form" action="" method="POST">
+      <div class="fields">
+        <div class="field">
+          <label class="activation-label">{{texts?.title}}</label>
+          <input [(ngModel)]="code" placeholder="קוד" type="text" name="code" class="code">
+          <button class="send" type="submit" (click)="activate()">{{texts?.send}}</button>
+        </div>
       </div>
-  </ion-content>
+
+    </form>
+
+    <div class="row" *ngIf="canResend">
+      <button class="smsReset" (click)="resend()"> {{texts?.resend}} </button> <br><small>{{texts?.onlyOnce}}</small>
+    </div>
+
+    <button (click)="showContact = !showContact" class="activation-problems"> {{texts?.problems}} </button>
+    <div class="success-text" *ngIf="sendSuccess">{{ texts?.sendSuccess }}</div>
+
+    <div *ngIf="showContact" class="harsama-midsec">
+      <form method="post" novalidate="">
+
+        <div *ngIf="formErrors" class="errors hidden empty_fields">
+          <div class="error-message">
+            יש להשלים את השדות המסומנים
+          </div>
+        </div>
+
+        <div class="hmaformsec three">
+
+        </div>
+        <div class="field_2">
+          <div class="label"><label for="contact_subject" class="required">*  נושא הפניה</label></div>
+          <div class="inputdiv">
+            <input [(ngModel)]="contact.subject.value" type="text" id="contact_subject" name="contact[subject]" required="required" [ngClass]="{'border-red': errors.subject}">
+          </div>
+          <div class="clear"></div>
+        </div>
+        <br>
+
+        <div class="field_2">
+          <div class="label"><label for="contact_text" class="required">*  הודעה</label></div>
+          <div class="textarea">
+            <textarea [(ngModel)]="contact.text.value" id="contact_text" name="contact[text]" required="required" [ngClass]="{'border-red': errors.text}"></textarea>
+          </div>
+          <div class="clear"></div>
+        </div>
+      </form>
+      <div class="clearfix">
+        <input (click)="sendEmail()" type="button" value="שלחי" class="free contact_submit">
+      </div>
+    </div>
+  </div>
+</ion-content>
